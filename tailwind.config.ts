@@ -1,4 +1,3 @@
-/* Tailwind config for the frontend react app. This is where the app theme should be defined: https://v2.tailwindcss.com/docs/configuration. */
 import type { Config } from 'tailwindcss'
 import animatePlugin from 'tailwindcss-animate'
 import typographyPlugin from '@tailwindcss/typography'
@@ -27,8 +26,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter var', 'SF Pro Display', 'system-ui', 'sans-serif'],
-        display: ['SF Pro Display', 'Inter var', 'system-ui', 'sans-serif'],
+        sans: ['Manrope', 'sans-serif'],
+        display: ['Manrope', 'sans-serif'],
       },
       colors: {
         border: 'hsl(var(--border))',
@@ -64,28 +63,27 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        sidebar: {
-          DEFAULT: 'hsl(var(--sidebar-background))',
-          foreground: 'hsl(var(--sidebar-foreground))',
-          primary: 'hsl(var(--sidebar-primary))',
-          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
-          accent: 'hsl(var(--sidebar-accent))',
-          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
-          border: 'hsl(var(--sidebar-border))',
-          ring: 'hsl(var(--sidebar-ring))',
-        },
-        chart: {
-          1: 'hsl(var(--chart-1))',
-          2: 'hsl(var(--chart-2))',
-          3: 'hsl(var(--chart-3))',
-          4: 'hsl(var(--chart-4))',
-          5: 'hsl(var(--chart-5))',
+        'background-light': '#f5f7f8',
+        'background-dark': '#101c22',
+        'slate-800': '#1e293b',
+        'slate-600': '#475569',
+        'slate-400': '#94a3b8',
+        'slate-200': '#e2e8f0',
+        'slate-300': '#cbd5e1',
+        'slate-700': '#334155',
+        'slate-500': '#64748b',
+        'checked-toggle': {
+          background: '#ffeccf',
+          foreground: '#0f172a',
         },
       },
       borderRadius: {
-        lg: 'var(--radius)',
+        '2xl': 'calc(var(--radius) * 2)',
+        xl: '1.5rem',
+        lg: '1rem',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        DEFAULT: '0.5rem',
       },
       transitionProperty: {
         width: 'width',
