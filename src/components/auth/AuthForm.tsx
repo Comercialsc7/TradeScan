@@ -59,7 +59,7 @@ export const AuthForm = ({ authMode }: AuthFormProps) => {
       </div>
       <Button
         type="submit"
-        className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background-dark"
+        className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background"
       >
         {authMode === 'login' ? 'Log In' : 'Sign Up'}
       </Button>

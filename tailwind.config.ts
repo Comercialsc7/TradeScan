@@ -63,8 +63,6 @@ export default {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        'background-light': '#f5f7f8',
-        'background-dark': '#101c22',
         'slate-800': '#1e293b',
         'slate-600': '#475569',
         'slate-400': '#94a3b8',
