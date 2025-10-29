@@ -10,7 +10,7 @@ const Index = () => {
     <div className="space-y-8">
       <div className="text-center">
         <h1 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-white">
-          PayApp
+          TradeScan
         </h1>
         <p className="mt-2 text-base text-slate-600 dark:text-slate-400">
           Pagamentos Simples, Inteligentes e Seguros.

@@ -1,7 +1,12 @@
+import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function Layout() {
+  useEffect(() => {
+    document.title = 'TradeScan'
+  }, [])
+
   return (
     <>
       <div className="absolute right-4 top-4 md:right-8 md:top-8">

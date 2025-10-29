@@ -18,7 +18,7 @@ const App = () => (
     <ThemeProvider
       attribute="class"
       defaultTheme="light"
-      storageKey="payapp-ui-theme"
+      storageKey="tradescan-ui-theme"
       disableTransitionOnChange
     >
       <TooltipProvider>
