@@ -28,12 +28,12 @@ const SearchCustomerPage = () => {
       return customers
     }
     const lowercasedSearchTerm = searchTerm.toLowerCase()
-    const numericSearchTerm = lowercasedSearchTerm.replace(/[^\d]/g, '')
+    const numericSearchTerm = searchTerm.replace(/[^\d]/g, '')
 
     return customers.filter(
       (customer) =>
         customer.name.toLowerCase().includes(lowercasedSearchTerm) ||
-        customer.id.includes(lowercasedSearchTerm) ||
+        customer.id.includes(searchTerm) ||
         customer.cnpj.replace(/[^\d]/g, '').includes(numericSearchTerm) ||
         customer.rede.toLowerCase().includes(lowercasedSearchTerm),
     )
