@@ -2,12 +2,12 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Zap, ArrowRightLeft } from 'lucide-react'
+import { ScanLine, Store } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
 const Index = () => {
   useEffect(() => {
-    document.title = 'Tela de Boas-Vindas'
+    document.title = 'Leitor de Produtos - Boas-Vindas'
   }, [])
 
   return (
@@ -24,11 +24,11 @@ const Index = () => {
             className="mx-auto mb-8 w-full max-w-xs rounded-lg"
           />
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            Pagamentos Mais Inteligentes, Vida Mais Simples
+            Leitor Inteligente de Produtos Comerciais
           </h1>
           <p className="mt-4 text-base text-muted-foreground sm:text-lg">
-            Envie dinheiro para qualquer pessoa, em qualquer lugar,
-            instantaneamente e pague com uma simples leitura.
+            Utilize a câmera do seu celular para escanear produtos e obter
+            informações detalhadas de forma rápida e precisa.
           </p>
           <div className="my-8 flex justify-center space-x-2">
             <span className="h-2 w-6 rounded-full bg-primary"></span>
@@ -39,31 +39,32 @@ const Index = () => {
             <Card className="text-left">
               <CardHeader>
                 <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <ArrowRightLeft className="h-6 w-6" />
+                  <ScanLine className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-base font-semibold">
-                  Transferências Sem Esforço
+                  Orientações para a Leitura do Código EAN
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Envie dinheiro para qualquer pessoa, em qualquer lugar,
-                  instantaneamente.
+                  Posicione o código de barras dentro da área de leitura e
+                  garanta boa iluminação para uma captura precisa.
                 </p>
               </CardContent>
             </Card>
             <Card className="text-left">
               <CardHeader>
                 <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Zap className="h-6 w-6" />
+                  <Store className="h-6 w-6" />
                 </div>
                 <CardTitle className="text-base font-semibold">
-                  Escaneie e Pague em Segundos
+                  Seleção Exata da Loja
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground">
-                  Pagamentos QR convenientes para compras em lojas.
+                  Escolha a loja correta para evitar erros no processo ou
+                  confusão e garantir a acuracidade das informações.
                 </p>
               </CardContent>
             </Card>
