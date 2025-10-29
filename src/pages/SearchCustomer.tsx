@@ -52,6 +52,12 @@ const SearchCustomerPage = () => {
     setSelectedCustomerId(customerId)
   }
 
+  const handleScan = () => {
+    if (selectedCustomerId) {
+      navigate('/scanner')
+    }
+  }
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4">
@@ -135,6 +141,7 @@ const SearchCustomerPage = () => {
         <Button
           className="h-14 w-full rounded-xl bg-primary text-base font-semibold text-white hover:bg-primary/90"
           disabled={!selectedCustomerId}
+          onClick={handleScan}
         >
           <ScanLine className="mr-2 h-6 w-6" />
           Escanear Código de Barras
