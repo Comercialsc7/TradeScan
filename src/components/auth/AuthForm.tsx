@@ -15,32 +15,32 @@ export const AuthForm = ({ authMode }: AuthFormProps) => {
     <form className="space-y-6">
       <div>
         <p className="mb-2 text-sm font-medium text-slate-800 dark:text-white">
-          Email Address
+          Endereço de E-mail
         </p>
         <Input
           type="email"
-          placeholder="Enter your email"
+          placeholder="Digite seu e-mail"
           className="h-14 w-full rounded-lg border-slate-300 bg-white text-base placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
         />
       </div>
       <div>
         <div className="mb-2 flex items-center justify-between">
           <p className="text-sm font-medium text-slate-800 dark:text-white">
-            Password
+            Senha
           </p>
           {authMode === 'login' && (
             <Link
               to="/forgot-password"
               className="text-sm font-medium text-primary hover:underline"
             >
-              Forgot Password?
+              Esqueceu a senha?
             </Link>
           )}
         </div>
         <div className="flex">
           <Input
             type={passwordVisible ? 'text' : 'password'}
-            placeholder="Enter your password"
+            placeholder="Digite sua senha"
             className="h-14 w-full rounded-l-lg rounded-r-none border-r-0 border-slate-300 bg-white text-base placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
           />
           <Button
@@ -61,7 +61,7 @@ export const AuthForm = ({ authMode }: AuthFormProps) => {
         type="submit"
         className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background"
       >
-        {authMode === 'login' ? 'Log In' : 'Sign Up'}
+        {authMode === 'login' ? 'Entrar' : 'Cadastrar'}
       </Button>
     </form>
   )

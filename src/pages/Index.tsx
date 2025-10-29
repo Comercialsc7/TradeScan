@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { AuthForm } from '@/components/auth/AuthForm'
-import { SocialLogins } from '@/components/auth/SocialLogins'
 
 const Index = () => {
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
@@ -14,7 +13,7 @@ const Index = () => {
           PayApp
         </h1>
         <p className="mt-2 text-base text-slate-600 dark:text-slate-400">
-          Simple, Smart, Secure Payments.
+          Pagamentos Simples, Inteligentes e Seguros.
         </p>
       </div>
 
@@ -36,7 +35,7 @@ const Index = () => {
               },
             )}
           >
-            Log In
+            Entrar
           </span>
         </label>
         <label className="z-10 flex h-full w-1/2 cursor-pointer items-center justify-center rounded-lg px-2 text-center transition-colors duration-200 ease-in-out">
@@ -56,7 +55,7 @@ const Index = () => {
               },
             )}
           >
-            Sign Up
+            Cadastrar
           </span>
         </label>
         <div
@@ -70,19 +69,17 @@ const Index = () => {
 
       <AuthForm authMode={authMode} />
 
-      <SocialLogins />
-
       <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-        By continuing, you agree to our{' '}
+        Ao continuar, você concorda com nossos{' '}
         <Link to="/terms" className="font-medium text-primary hover:underline">
-          Terms of Service
+          Termos de Serviço
         </Link>{' '}
-        and{' '}
+        e{' '}
         <Link
           to="/privacy"
           className="font-medium text-primary hover:underline"
         >
-          Privacy Policy
+          Política de Privacidade
         </Link>
         .
       </p>
