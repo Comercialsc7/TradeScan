@@ -1,88 +1,94 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { cn } from '@/lib/utils'
-import { AuthForm } from '@/components/auth/AuthForm'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Zap, ArrowRightLeft } from 'lucide-react'
+import { ThemeToggle } from '@/components/theme-toggle'
 
 const Index = () => {
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
+  useEffect(() => {
+    document.title = 'Tela de Boas-Vindas'
+  }, [])
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-white">
-          TradeScan
-        </h1>
-        <p className="mt-2 text-base text-slate-600 dark:text-slate-400">
-          leitura comercial Inteligente
-        </p>
-      </div>
-
-      <div className="relative flex h-12 items-center justify-center rounded-xl bg-slate-200 p-1 dark:bg-slate-800">
-        <label className="z-10 flex h-full w-1/2 cursor-pointer items-center justify-center rounded-lg px-2 text-center transition-colors duration-200 ease-in-out">
-          <input
-            type="radio"
-            name="auth-mode"
-            value="login"
-            className="peer sr-only"
-            checked={authMode === 'login'}
-            onChange={() => setAuthMode('login')}
+    <div className="flex min-h-screen w-full flex-col bg-background">
+      <header className="flex items-center justify-end p-4 sm:p-6">
+        <ThemeToggle />
+      </header>
+      <main className="flex flex-1 flex-col items-center justify-center p-4 sm:p-6 md:p-8">
+        <div className="w-full max-w-lg text-center">
+          <img
+            src="https://img.usecurling.com/p/600/400?q=digital%20money%20transfer%20abstract"
+            alt="Gráfico abstrato representando transferências digitais rápidas de dinheiro e leitura de código QR"
+            data-alt="Gráfico abstrato representando transferências digitais rápidas de dinheiro e leitura de código QR"
+            className="mx-auto mb-8 w-full max-w-xs rounded-lg"
           />
-          <span
-            className={cn(
-              'text-sm font-medium text-slate-500 dark:text-slate-400',
-              {
-                'text-checked-toggle-foreground': authMode === 'login',
-              },
-            )}
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            Pagamentos Mais Inteligentes, Vida Mais Simples
+          </h1>
+          <p className="mt-4 text-base text-muted-foreground sm:text-lg">
+            Envie dinheiro para qualquer pessoa, em qualquer lugar,
+            instantaneamente e pague com uma simples leitura.
+          </p>
+          <div className="my-8 flex justify-center space-x-2">
+            <span className="h-2 w-6 rounded-full bg-primary"></span>
+            <span className="h-2 w-2 rounded-full bg-secondary"></span>
+            <span className="h-2 w-2 rounded-full bg-secondary"></span>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Card className="text-left">
+              <CardHeader>
+                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <ArrowRightLeft className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-base font-semibold">
+                  Transferências Sem Esforço
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Envie dinheiro para qualquer pessoa, em qualquer lugar,
+                  instantaneamente.
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="text-left">
+              <CardHeader>
+                <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <Zap className="h-6 w-6" />
+                </div>
+                <CardTitle className="text-base font-semibold">
+                  Escaneie e Pague em Segundos
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  Pagamentos QR convenientes para compras em lojas.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </main>
+      <footer className="p-4 sm:p-6 md:p-8">
+        <div className="mx-auto w-full max-w-lg space-y-4">
+          <Button
+            asChild
+            className="h-12 w-full rounded-xl text-base font-semibold"
           >
-            Entrar
-          </span>
-        </label>
-        <label className="z-10 flex h-full w-1/2 cursor-pointer items-center justify-center rounded-lg px-2 text-center transition-colors duration-200 ease-in-out">
-          <input
-            type="radio"
-            name="auth-mode"
-            value="signup"
-            className="peer sr-only"
-            checked={authMode === 'signup'}
-            onChange={() => setAuthMode('signup')}
-          />
-          <span
-            className={cn(
-              'text-sm font-medium text-slate-500 dark:text-slate-400',
-              {
-                'text-checked-toggle-foreground': authMode === 'signup',
-              },
-            )}
-          >
-            Cadastrar
-          </span>
-        </label>
-        <div
-          className={cn(
-            'absolute left-1 top-1 h-10 w-[calc(50%-0.25rem)] rounded-lg bg-checked-toggle-background shadow-sm transition-transform duration-200 ease-in-out',
-            { 'translate-x-0': authMode === 'login' },
-            { 'translate-x-full': authMode === 'signup' },
-          )}
-        />
-      </div>
-
-      <AuthForm authMode={authMode} />
-
-      <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-        Ao continuar, você concorda com nossos{' '}
-        <Link to="/terms" className="font-medium text-primary hover:underline">
-          Termos de Serviço
-        </Link>{' '}
-        e{' '}
-        <Link
-          to="/privacy"
-          className="font-medium text-primary hover:underline"
-        >
-          Política de Privacidade
-        </Link>
-        .
-      </p>
+            <Link to="/auth?mode=signup">Começar</Link>
+          </Button>
+          <p className="text-center text-sm text-muted-foreground">
+            Já tem uma conta?{' '}
+            <Link
+              to="/auth?mode=login"
+              className="font-semibold text-primary hover:underline"
+            >
+              Entrar
+            </Link>
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
