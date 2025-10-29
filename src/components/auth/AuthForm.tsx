@@ -1,68 +1,105 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
+import type { LoginSchema, SignupSchema } from '@/lib/schemas'
 
 type AuthFormProps = {
   authMode: 'login' | 'signup'
+  schema: z.ZodType<LoginSchema> | z.ZodType<SignupSchema>
 }
 
-export const AuthForm = ({ authMode }: AuthFormProps) => {
+export const AuthForm = ({ authMode, schema }: AuthFormProps) => {
   const [passwordVisible, setPasswordVisible] = useState(false)
 
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  })
+
+  function onSubmit(values: z.infer<typeof schema>) {
+    console.log(values)
+    // Here you would typically handle the login/signup logic
+  }
+
   return (
-    <form className="space-y-6">
-      <div>
-        <p className="mb-2 text-sm font-medium text-slate-800 dark:text-white">
-          Endereço de E-mail
-        </p>
-        <Input
-          type="email"
-          placeholder="Digite seu e-mail"
-          className="h-14 w-full rounded-lg border-slate-300 bg-white text-base placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-        />
-      </div>
-      <div>
-        <div className="mb-2 flex items-center justify-between">
-          <p className="text-sm font-medium text-slate-800 dark:text-white">
-            Senha
-          </p>
-          {authMode === 'login' && (
-            <Link
-              to="/forgot-password"
-              className="text-sm font-medium text-primary hover:underline"
-            >
-              Esqueceu a senha?
-            </Link>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-slate-800 dark:text-white">
+                Endereço de E-mail
+              </FormLabel>
+              <FormControl>
+                <Input
+                  type="email"
+                  placeholder="Digite seu e-mail"
+                  className="h-14 w-full rounded-lg border-slate-300 bg-white text-base placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
           )}
-        </div>
-        <div className="flex">
-          <Input
-            type={passwordVisible ? 'text' : 'password'}
-            placeholder="Digite sua senha"
-            className="h-14 w-full rounded-l-lg rounded-r-none border-r-0 border-slate-300 bg-white text-base placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => setPasswordVisible(!passwordVisible)}
-            className="h-14 w-auto rounded-l-none rounded-r-lg border border-slate-300 bg-white px-4 text-slate-500 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
-          >
-            {passwordVisible ? (
-              <EyeOff className="h-5 w-5" />
-            ) : (
-              <Eye className="h-5 w-5" />
-            )}
-          </Button>
-        </div>
-      </div>
-      <Button
-        type="submit"
-        className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background"
-      >
-        {authMode === 'login' ? 'Entrar' : 'Cadastrar'}
-      </Button>
-    </form>
+        />
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-sm font-medium text-slate-800 dark:text-white">
+                Senha
+              </FormLabel>
+              <div className="flex">
+                <FormControl>
+                  <Input
+                    type={passwordVisible ? 'text' : 'password'}
+                    placeholder="Digite sua senha"
+                    className="h-14 w-full rounded-l-lg rounded-r-none border-r-0 border-slate-300 bg-white text-base placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/20 dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
+                    {...field}
+                  />
+                </FormControl>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setPasswordVisible(!passwordVisible)}
+                  className="h-14 w-auto rounded-l-none rounded-r-lg border border-slate-300 bg-white px-4 text-slate-500 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
+                >
+                  {passwordVisible ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </Button>
+              </div>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button
+          type="submit"
+          className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background"
+        >
+          {authMode === 'login' ? 'Entrar' : 'Cadastrar'}
+        </Button>
+      </form>
+    </Form>
   )
 }

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/utils'
 import { AuthForm } from '@/components/auth/AuthForm'
+import { loginSchema, signupSchema } from '@/lib/schemas'
 
 const AuthPage = () => {
   const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
   const mode = searchParams.get('mode')
   const [authMode, setAuthMode] = useState<'login' | 'signup'>(
     mode === 'signup' ? 'signup' : 'login',
@@ -16,6 +18,13 @@ const AuthPage = () => {
     document.title =
       newMode === 'login' ? 'Entrar - PayApp' : 'Cadastrar - PayApp'
   }, [mode])
+
+  const handleModeChange = (newMode: 'login' | 'signup') => {
+    setAuthMode(newMode)
+    navigate(`/auth?mode=${newMode}`, { replace: true })
+  }
+
+  const schema = authMode === 'login' ? loginSchema : signupSchema
 
   return (
     <div className="space-y-8">
@@ -36,7 +45,7 @@ const AuthPage = () => {
             value="login"
             className="peer sr-only"
             checked={authMode === 'login'}
-            onChange={() => setAuthMode('login')}
+            onChange={() => handleModeChange('login')}
           />
           <span
             className={cn(
@@ -56,7 +65,7 @@ const AuthPage = () => {
             value="signup"
             className="peer sr-only"
             checked={authMode === 'signup'}
-            onChange={() => setAuthMode('signup')}
+            onChange={() => handleModeChange('signup')}
           />
           <span
             className={cn(
@@ -78,22 +87,7 @@ const AuthPage = () => {
         />
       </div>
 
-      <AuthForm authMode={authMode} />
-
-      <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-        Ao continuar, você concorda com nossos{' '}
-        <Link to="/terms" className="font-medium text-primary hover:underline">
-          Termos de Serviço
-        </Link>{' '}
-        e{' '}
-        <Link
-          to="/privacy"
-          className="font-medium text-primary hover:underline"
-        >
-          Política de Privacidade
-        </Link>
-        .
-      </p>
+      <AuthForm authMode={authMode} schema={schema} />
     </div>
   )
 }
