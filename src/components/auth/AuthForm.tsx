@@ -36,7 +36,7 @@ export const AuthForm = ({ authMode, schema }: AuthFormProps) => {
   function onSubmit(values: z.infer<typeof schema>) {
     console.log(values)
     // Here you would typically handle the login/signup logic
-    navigate('/search-customer')
+    navigate('/welcome')
   }
 
   return (

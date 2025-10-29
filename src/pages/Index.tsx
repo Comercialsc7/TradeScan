@@ -100,7 +100,7 @@ const Index = () => {
           <CarouselPagination count={count} current={current} />
           <FeatureCards cards={slides[current - 1]?.cards ?? []} />
           <div className="mt-8">
-            <Link to="/auth">
+            <Link to="/search-customer">
               <Button className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background">
                 Começar
               </Button>
