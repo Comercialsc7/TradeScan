@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import {
   ArrowLeft,
   Search,
@@ -10,52 +10,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-
-type Customer = {
-  id: string
-  name: string
-  cnpj: string
-  rede: string
-}
-
-const customers: Customer[] = [
-  {
-    id: '789123',
-    name: 'Supermercado Pague Menos',
-    cnpj: '12.345.678/0001-99',
-    rede: 'Rede Sol',
-  },
-  {
-    id: '456789',
-    name: 'Atacadão Dia a Dia',
-    cnpj: '98.765.432/0001-11',
-    rede: 'Rede Forte',
-  },
-  {
-    id: '123456',
-    name: 'Varejão do Povo',
-    cnpj: '11.222.333/0001-44',
-    rede: 'Rede União',
-  },
-  {
-    id: '987654',
-    name: 'Mercado da Esquina',
-    cnpj: '44.555.666/0001-77',
-    rede: 'Rede Sol',
-  },
-  {
-    id: '321654',
-    name: 'Empório Bom Preço',
-    cnpj: '77.888.999/0001-00',
-    rede: 'Rede Forte',
-  },
-  {
-    id: '654987',
-    name: 'Minimercado Central',
-    cnpj: '22.333.444/0001-55',
-    rede: 'Rede União',
-  },
-]
+import { customers } from '@/lib/mock-data'
 
 const SearchCustomerPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -141,11 +96,19 @@ const SearchCustomerPage = () => {
                   </p>
                 </div>
               </div>
-              {selectedCustomerId === customer.id ? (
-                <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
-              ) : (
-                <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
-              )}
+              <div className="flex items-center space-x-2">
+                {selectedCustomerId === customer.id && (
+                  <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
+                )}
+                <Link
+                  to={`/customer/${customer.id}`}
+                  className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                  onClick={(e) => e.stopPropagation()}
+                  aria-label={`Ver detalhes de ${customer.name}`}
+                >
+                  <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
+                </Link>
+              </div>
             </div>
           ))}
         </div>
