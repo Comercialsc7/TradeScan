@@ -18,7 +18,7 @@ const Index = () => {
       <main className="flex flex-1 flex-col items-center justify-center p-4 sm:p-6 md:p-8">
         <div className="w-full max-w-lg text-center">
           <img
-            src="https://img.usecurling.com/p/600/400?q=barcode%20payment"
+            src="https://www.grupocpcon.com/wp-content/uploads/2024/06/codigo-de-barras-768x439.webp"
             alt="Imagem representando pagamento com código de barras"
             data-alt="Imagem representando pagamento com código de barras"
             className="mx-auto mb-8 w-full max-w-xs rounded-lg"
