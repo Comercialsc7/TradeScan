@@ -257,11 +257,14 @@ const ScannerPage = () => {
           </div>
           <div className="flex flex-col items-center gap-2 text-center">
             <Button
+              asChild
               variant="ghost"
               className="h-12 w-12 rounded-full bg-black/40 p-0 text-white transition-colors hover:bg-black/50"
               disabled={isProcessing}
             >
-              <Keyboard className="h-6 w-6" />
+              <Link to="/manual-entry">
+                <Keyboard className="h-6 w-6" />
+              </Link>
             </Button>
             <span className="text-sm font-medium text-white">
               Digitar código

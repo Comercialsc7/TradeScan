@@ -12,6 +12,7 @@ import Layout from './components/Layout'
 import SearchCustomerPage from './pages/SearchCustomer'
 import CustomerDetailsPage from './pages/CustomerDetails'
 import ScannerPage from './pages/Scanner'
+import ManualEntryPage from './pages/ManualEntry'
 
 // ONLY IMPORT AND RENDER WORKING PAGES, NEVER ADD PLACEHOLDER COMPONENTS OR PAGES IN THIS FILE
 // AVOID REMOVING ANY CONTEXT PROVIDERS FROM THIS FILE (e.g. TooltipProvider, Toaster, Sonner)
@@ -43,6 +44,7 @@ const App = () => {
             <Route path="/search-customer" element={<SearchCustomerPage />} />
             <Route path="/customer/:id" element={<CustomerDetailsPage />} />
             <Route path="/scanner" element={<ScannerPage />} />
+            <Route path="/manual-entry" element={<ManualEntryPage />} />
             <Route path="/" element={<Navigate to="/auth" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

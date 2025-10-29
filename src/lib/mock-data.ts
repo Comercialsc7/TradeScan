@@ -71,3 +71,39 @@ export const customers: Customer[] = [
     telefone: '(51) 94444-1234',
   },
 ]
+
+export type Product = {
+  barcode: string
+  name: string
+  brand: string
+  price: number
+  margin: number
+  lastPurchaseDate: string
+}
+
+export const products: Product[] = [
+  {
+    barcode: '7891000315507',
+    name: 'Coca-Cola 2L',
+    brand: 'Coca-Cola',
+    price: 8.5,
+    margin: 0.35,
+    lastPurchaseDate: '2025-10-15',
+  },
+  {
+    barcode: '7891991010836',
+    name: 'Salgadinho Doritos Queijo Nacho 140g',
+    brand: 'Elma Chips',
+    price: 9.99,
+    margin: 0.4,
+    lastPurchaseDate: '2025-10-20',
+  },
+  {
+    barcode: '7896065800034',
+    name: 'Leite Integral Italac 1L',
+    brand: 'Italac',
+    price: 4.29,
+    margin: 0.25,
+    lastPurchaseDate: '2025-10-22',
+  },
+]
