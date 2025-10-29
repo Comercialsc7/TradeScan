@@ -14,32 +14,46 @@ import { cn } from '@/lib/utils'
 type Customer = {
   id: string
   name: string
+  cnpj: string
+  rede: string
 }
 
 const customers: Customer[] = [
   {
     id: '789123',
-    name: 'Maria Rodriguez',
+    name: 'Supermercado Pague Menos',
+    cnpj: '12.345.678/0001-99',
+    rede: 'Rede Sol',
   },
   {
     id: '456789',
-    name: 'John Smith',
+    name: 'Atacadão Dia a Dia',
+    cnpj: '98.765.432/0001-11',
+    rede: 'Rede Forte',
   },
   {
     id: '123456',
-    name: 'Emily Johnson',
+    name: 'Varejão do Povo',
+    cnpj: '11.222.333/0001-44',
+    rede: 'Rede União',
   },
   {
     id: '987654',
-    name: 'David Brown',
+    name: 'Mercado da Esquina',
+    cnpj: '44.555.666/0001-77',
+    rede: 'Rede Sol',
   },
   {
     id: '321654',
-    name: 'Jessica Williams',
+    name: 'Empório Bom Preço',
+    cnpj: '77.888.999/0001-00',
+    rede: 'Rede Forte',
   },
   {
     id: '654987',
-    name: 'Michael Jones',
+    name: 'Minimercado Central',
+    cnpj: '22.333.444/0001-55',
+    rede: 'Rede União',
   },
 ]
 
@@ -58,10 +72,15 @@ const SearchCustomerPage = () => {
     if (!searchTerm) {
       return customers
     }
+    const lowercasedSearchTerm = searchTerm.toLowerCase()
+    const numericSearchTerm = lowercasedSearchTerm.replace(/[^\d]/g, '')
+
     return customers.filter(
       (customer) =>
-        customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        customer.id.includes(searchTerm),
+        customer.name.toLowerCase().includes(lowercasedSearchTerm) ||
+        customer.id.includes(lowercasedSearchTerm) ||
+        customer.cnpj.replace(/[^\d]/g, '').includes(numericSearchTerm) ||
+        customer.rede.toLowerCase().includes(lowercasedSearchTerm),
     )
   }, [searchTerm])
 
@@ -86,38 +105,46 @@ const SearchCustomerPage = () => {
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
           <Input
             type="text"
-            placeholder="Nome ou ID do Cliente"
+            placeholder="Buscar por nome, ID, CNPJ ou rede"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="h-14 rounded-xl border-none bg-zinc-200 pl-12 text-zinc-900 placeholder:text-zinc-500 dark:bg-zinc-800/50 dark:text-white dark:placeholder:text-zinc-400"
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           {filteredCustomers.map((customer) => (
             <div
               key={customer.id}
               className={cn(
-                'flex cursor-pointer items-center space-x-4 rounded-lg p-3 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
+                'flex cursor-pointer items-center space-x-4 rounded-lg p-4 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
                 {
-                  'bg-primary/10 dark:bg-primary/20':
+                  'bg-primary/10 ring-2 ring-primary dark:bg-primary/20':
                     selectedCustomerId === customer.id,
                 },
               )}
               onClick={() => handleCustomerSelect(customer.id)}
             >
-              <div className="flex-1">
+              <div className="flex-1 space-y-1.5">
                 <p className="font-semibold text-zinc-900 dark:text-white">
                   {customer.name}
                 </p>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                  ID do Cliente: {customer.id}
-                </p>
+                <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
+                  <p>
+                    <span className="font-medium">ID:</span> {customer.id}
+                  </p>
+                  <p>
+                    <span className="font-medium">CNPJ:</span> {customer.cnpj}
+                  </p>
+                  <p className="col-span-full">
+                    <span className="font-medium">Rede:</span> {customer.rede}
+                  </p>
+                </div>
               </div>
               {selectedCustomerId === customer.id ? (
-                <CheckCircle2 className="h-5 w-5 text-primary" />
+                <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
               ) : (
-                <ChevronRight className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+                <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
               )}
             </div>
           ))}
@@ -125,7 +152,10 @@ const SearchCustomerPage = () => {
       </main>
 
       <footer className="sticky bottom-0 border-t bg-background p-4">
-        <Button className="h-14 w-full rounded-xl bg-primary text-base font-semibold text-white hover:bg-primary/90">
+        <Button
+          className="h-14 w-full rounded-xl bg-primary text-base font-semibold text-white hover:bg-primary/90"
+          disabled={!selectedCustomerId}
+        >
           <ScanLine className="mr-2 h-6 w-6" />
           Escanear Código de Barras
         </Button>
