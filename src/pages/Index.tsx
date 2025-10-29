@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { type CarouselApi } from '@/components/ui/carousel'
 import { ScanLine, Store, Search, BarChart3, History } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { WelcomeCarousel } from '@/components/welcome/WelcomeCarousel'
 import { CarouselPagination } from '@/components/welcome/CarouselPagination'
 import { FeatureCards } from '@/components/welcome/FeatureCards'
+import { Button } from '@/components/ui/button'
 
 const slides = [
   {
@@ -97,6 +99,13 @@ const Index = () => {
           <WelcomeCarousel slides={slides} setApi={setApi} />
           <CarouselPagination count={count} current={current} />
           <FeatureCards cards={slides[current - 1]?.cards ?? []} />
+          <div className="mt-8">
+            <Link to="/auth">
+              <Button className="h-14 w-full rounded-xl bg-primary px-6 text-base font-semibold text-white shadow-sm transition-all hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 dark:focus:ring-offset-background">
+                Começar
+              </Button>
+            </Link>
+          </div>
         </div>
       </main>
     </div>
