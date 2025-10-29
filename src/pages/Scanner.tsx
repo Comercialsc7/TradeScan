@@ -1,6 +1,14 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState, ChangeEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { X, Zap, Image, VideoOff, Loader2, Keyboard } from 'lucide-react'
+import {
+  X,
+  Zap,
+  Image,
+  VideoOff,
+  Loader2,
+  Keyboard,
+  ScanLine as ScanLineIcon,
+} from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCamera } from '@/hooks/useCamera'
 import { cn } from '@/lib/utils'
@@ -9,6 +17,8 @@ import { toast } from '@/components/ui/use-toast'
 
 const ScannerPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
   const {
     stream,
     permissionStatus,
@@ -78,6 +88,64 @@ const ScannerPage = () => {
       clearInterval(intervalId)
     }
   }, [permissionStatus, stream])
+
+  const handleGalleryClick = () => {
+    if (isProcessing) return
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    setIsProcessing(true)
+
+    if (!('BarcodeDetector' in window)) {
+      toast({
+        title: 'Navegador incompatível',
+        description:
+          'A leitura de código de barras não é suportada neste navegador.',
+        variant: 'destructive',
+      })
+      setIsProcessing(false)
+      return
+    }
+
+    try {
+      const barcodeDetector = new (window as any).BarcodeDetector({
+        formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'],
+      })
+
+      const imageBitmap = await createImageBitmap(file)
+      const barcodes = await barcodeDetector.detect(imageBitmap)
+
+      if (barcodes.length > 0) {
+        toast({
+          title: 'Código de Barras Detectado',
+          description: `Valor: ${barcodes[0].rawValue}`,
+        })
+      } else {
+        toast({
+          title: 'Nenhum código encontrado',
+          description:
+            'Não foi possível encontrar um código de barras na imagem selecionada.',
+        })
+      }
+    } catch (error) {
+      console.error('Barcode detection from image failed:', error)
+      toast({
+        title: 'Erro ao processar imagem',
+        description:
+          'Ocorreu um erro ao tentar ler o código de barras da imagem.',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsProcessing(false)
+      if (event.target) {
+        event.target.value = ''
+      }
+    }
+  }
 
   if (permissionStatus === 'pending') {
     return (
@@ -150,24 +218,38 @@ const ScannerPage = () => {
           Aponte para o código de barras
         </h1>
         <div className="relative aspect-square w-full max-w-[280px]">
-          <div className="absolute -left-1 -top-1 h-12 w-12 border-l-4 border-t-4 border-white" />
-          <div className="absolute -right-1 -top-1 h-12 w-12 border-r-4 border-t-4 border-white" />
-          <div className="absolute -left-1 -bottom-1 h-12 w-12 border-l-4 border-b-4 border-white" />
-          <div className="absolute -right-1 -bottom-1 h-12 w-12 border-r-4 border-b-4 border-white" />
-          <div className="absolute left-0 top-0 h-full w-full overflow-hidden">
-            <div className="animate-scan-line absolute h-1 w-full bg-primary" />
+          <div className="animate-pulse-border absolute -left-1 -top-1 h-12 w-12 rounded-tl-lg border-l-4 border-t-4 border-white" />
+          <div className="animate-pulse-border absolute -right-1 -top-1 h-12 w-12 rounded-tr-lg border-r-4 border-t-4 border-white" />
+          <div className="animate-pulse-border absolute -left-1 -bottom-1 h-12 w-12 rounded-bl-lg border-l-4 border-b-4 border-white" />
+          <div className="animate-pulse-border absolute -right-1 -bottom-1 h-12 w-12 rounded-br-lg border-r-4 border-b-4 border-white" />
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="animate-scan-line absolute -top-full h-1 w-full bg-primary shadow-[0_0_10px_2px_hsl(var(--primary))]"></div>
           </div>
         </div>
       </main>
 
       <footer className="z-10 w-full p-6 pb-12">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/*"
+          className="hidden"
+          aria-hidden="true"
+        />
         <div className="flex items-center justify-around gap-4">
           <div className="flex flex-col items-center gap-2 text-center">
             <Button
               variant="ghost"
               className="h-12 w-12 rounded-full bg-black/40 p-0 text-white transition-colors hover:bg-black/50"
+              onClick={handleGalleryClick}
+              disabled={isProcessing}
             >
-              <Image className="h-6 w-6" />
+              {isProcessing ? (
+                <Loader2 className="h-6 w-6 animate-spin" />
+              ) : (
+                <Image className="h-6 w-6" />
+              )}
             </Button>
             <span className="text-sm font-medium text-white">
               Enviar da Galeria
@@ -177,6 +259,7 @@ const ScannerPage = () => {
             <Button
               variant="ghost"
               className="h-12 w-12 rounded-full bg-black/40 p-0 text-white transition-colors hover:bg-black/50"
+              disabled={isProcessing}
             >
               <Keyboard className="h-6 w-6" />
             </Button>
