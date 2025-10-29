@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScanLine, Store, Search } from 'lucide-react'
+import { ScanLine, Store, Search, BarChart3, History } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 import {
   Carousel,
@@ -76,6 +76,28 @@ const Index = () => {
           title: 'Informações Detalhadas',
           description:
             'Acesse rapidamente o histórico e os dados completos dos clientes para um atendimento mais eficaz e personalizado.',
+        },
+      ],
+    },
+    {
+      image:
+        'https://img.freepik.com/free-psd/pie-chart-growth-report-financial-graph-icon-isolated-3d-render-illustration_47987-11328.jpg',
+      alt: 'Imagem representando um gráfico financeiro',
+      title: 'Leitura Inteligente de Dados',
+      description:
+        'Obtenha insights valiosos sobre os produtos, como margem, última compra e último preço praticado, com base na seleção do cliente e na leitura do produto.',
+      cards: [
+        {
+          icon: BarChart3,
+          title: 'Análise de Margem',
+          description:
+            'Visualize a margem de lucro de cada produto para tomar decisões de precificação mais estratégicas.',
+        },
+        {
+          icon: History,
+          title: 'Histórico de Preços',
+          description:
+            'Acesse o último preço praticado e a data da última compra para negociações mais informadas.',
         },
       ],
     },
