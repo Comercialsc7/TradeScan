@@ -109,15 +109,6 @@ const Index = () => {
           >
             <Link to="/auth?mode=signup">Começar</Link>
           </Button>
-          <p className="text-center text-sm text-muted-foreground">
-            Já tem uma conta?{' '}
-            <Link
-              to="/auth?mode=login"
-              className="font-semibold text-primary hover:underline"
-            >
-              Entrar
-            </Link>
-          </p>
         </div>
       </footer>
     </div>
