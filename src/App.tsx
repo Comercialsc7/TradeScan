@@ -1,6 +1,6 @@
 /* Main App Component - Handles routing (using react-router-dom), query client and other providers - use this file to add all routes */
 import { useEffect } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
@@ -32,11 +32,12 @@ const App = () => {
           <Toaster />
           <Sonner />
           <Routes>
-            <Route path="/" element={<Index />} />
+            <Route path="/welcome" element={<Index />} />
             <Route element={<Layout />}>
               <Route path="/auth" element={<AuthPage />} />
               {/* ADD ALL CUSTOM ROUTES MUST BE ADDED HERE */}
             </Route>
+            <Route path="/" element={<Navigate to="/auth" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

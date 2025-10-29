@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
 import { type CarouselApi } from '@/components/ui/carousel'
 import { ScanLine, Store, Search, BarChart3, History } from 'lucide-react'
 import { WelcomeCarousel } from '@/components/welcome/WelcomeCarousel'
@@ -82,7 +80,7 @@ const Index = () => {
   const [count, setCount] = useState(0)
 
   useEffect(() => {
-    document.title = 'Leitor de Produtos - Boas-Vindas'
+    document.title = 'Bem-vindo - TradeScan'
   }, [])
 
   useEffect(() => {
@@ -101,16 +99,6 @@ const Index = () => {
           <FeatureCards cards={slides[current - 1]?.cards ?? []} />
         </div>
       </main>
-      <footer className="p-4 sm:p-6 md:p-8">
-        <div className="mx-auto w-full max-w-lg space-y-4">
-          <Button
-            asChild
-            className="h-12 w-full rounded-xl text-base font-semibold"
-          >
-            <Link to="/auth?mode=signup">Começar</Link>
-          </Button>
-        </div>
-      </footer>
     </div>
   )
 }

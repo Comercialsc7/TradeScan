@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import type { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -22,6 +23,7 @@ type AuthFormProps = {
 
 export const AuthForm = ({ authMode, schema }: AuthFormProps) => {
   const [passwordVisible, setPasswordVisible] = useState(false)
+  const navigate = useNavigate()
 
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -34,6 +36,7 @@ export const AuthForm = ({ authMode, schema }: AuthFormProps) => {
   function onSubmit(values: z.infer<typeof schema>) {
     console.log(values)
     // Here you would typically handle the login/signup logic
+    navigate('/welcome')
   }
 
   return (
