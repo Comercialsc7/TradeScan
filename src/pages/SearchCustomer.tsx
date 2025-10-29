@@ -68,49 +68,57 @@ const SearchCustomerPage = () => {
         </div>
 
         <div className="space-y-3">
-          {filteredCustomers.map((customer) => (
-            <div
-              key={customer.id}
-              className={cn(
-                'flex cursor-pointer items-center space-x-4 rounded-lg p-4 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
-                {
-                  'bg-primary/10 ring-2 ring-primary dark:bg-primary/20':
-                    selectedCustomerId === customer.id,
-                },
-              )}
-              onClick={() => handleCustomerSelect(customer.id)}
-            >
-              <div className="flex-1 space-y-1.5">
-                <p className="font-semibold text-zinc-900 dark:text-white">
-                  {customer.name}
-                </p>
-                <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
-                  <p>
-                    <span className="font-medium">ID:</span> {customer.id}
+          {filteredCustomers.length > 0 ? (
+            filteredCustomers.map((customer) => (
+              <div
+                key={customer.id}
+                className={cn(
+                  'flex cursor-pointer items-center space-x-4 rounded-lg p-4 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
+                  {
+                    'bg-primary/10 ring-2 ring-primary dark:bg-primary/20':
+                      selectedCustomerId === customer.id,
+                  },
+                )}
+                onClick={() => handleCustomerSelect(customer.id)}
+              >
+                <div className="flex-1 space-y-1.5">
+                  <p className="font-semibold text-zinc-900 dark:text-white">
+                    {customer.name}
                   </p>
-                  <p>
-                    <span className="font-medium">CNPJ:</span> {customer.cnpj}
-                  </p>
-                  <p className="col-span-full">
-                    <span className="font-medium">Rede:</span> {customer.rede}
-                  </p>
+                  <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
+                    <p>
+                      <span className="font-medium">ID:</span> {customer.id}
+                    </p>
+                    <p>
+                      <span className="font-medium">CNPJ:</span> {customer.cnpj}
+                    </p>
+                    <p className="col-span-full">
+                      <span className="font-medium">Rede:</span> {customer.rede}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  {selectedCustomerId === customer.id && (
+                    <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
+                  )}
+                  <Link
+                    to={`/customer/${customer.id}`}
+                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                    onClick={(e) => e.stopPropagation()}
+                    aria-label={`Ver detalhes de ${customer.name}`}
+                  >
+                    <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
+                  </Link>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                {selectedCustomerId === customer.id && (
-                  <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
-                )}
-                <Link
-                  to={`/customer/${customer.id}`}
-                  className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                  onClick={(e) => e.stopPropagation()}
-                  aria-label={`Ver detalhes de ${customer.name}`}
-                >
-                  <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
-                </Link>
-              </div>
+            ))
+          ) : (
+            <div className="py-10 text-center">
+              <p className="text-muted-foreground">
+                Nenhum cliente encontrado.
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </main>
 
