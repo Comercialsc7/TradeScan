@@ -18,9 +18,9 @@ const Index = () => {
       <main className="flex flex-1 flex-col items-center justify-center p-4 sm:p-6 md:p-8">
         <div className="w-full max-w-lg text-center">
           <img
-            src="https://img.usecurling.com/p/600/400?q=digital%20money%20transfer%20abstract"
-            alt="Gráfico abstrato representando transferências digitais rápidas de dinheiro e leitura de código QR"
-            data-alt="Gráfico abstrato representando transferências digitais rápidas de dinheiro e leitura de código QR"
+            src="https://img.usecurling.com/p/600/400?q=barcode%20payment"
+            alt="Imagem representando pagamento com código de barras"
+            data-alt="Imagem representando pagamento com código de barras"
             className="mx-auto mb-8 w-full max-w-xs rounded-lg"
           />
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
