@@ -9,6 +9,7 @@ import Index from './pages/Index'
 import AuthPage from './pages/Auth'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
+import SearchCustomerPage from './pages/SearchCustomer'
 
 // ONLY IMPORT AND RENDER WORKING PAGES, NEVER ADD PLACEHOLDER COMPONENTS OR PAGES IN THIS FILE
 // AVOID REMOVING ANY CONTEXT PROVIDERS FROM THIS FILE (e.g. TooltipProvider, Toaster, Sonner)
@@ -37,6 +38,7 @@ const App = () => {
               <Route path="/auth" element={<AuthPage />} />
               {/* ADD ALL CUSTOM ROUTES MUST BE ADDED HERE */}
             </Route>
+            <Route path="/search-customer" element={<SearchCustomerPage />} />
             <Route path="/" element={<Navigate to="/auth" replace />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
