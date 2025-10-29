@@ -38,7 +38,7 @@ const AuthPage = () => {
             TradeScan
           </h1>
           <p className="mt-2 text-base text-slate-600 dark:text-slate-400">
-            Pagamentos inteligentes, vida simples.
+            Leitura Comercial Inteligente.
           </p>
         </div>
 
