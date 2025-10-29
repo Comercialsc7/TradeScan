@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { type CarouselApi } from '@/components/ui/carousel'
 import { ScanLine, Store, Search, BarChart3, History } from 'lucide-react'
-import { ThemeToggle } from '@/components/theme-toggle'
 import { WelcomeCarousel } from '@/components/welcome/WelcomeCarousel'
 import { CarouselPagination } from '@/components/welcome/CarouselPagination'
 import { FeatureCards } from '@/components/welcome/FeatureCards'
@@ -95,9 +94,6 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <header className="flex items-center justify-end p-4 sm:p-6">
-        <ThemeToggle />
-      </header>
       <main className="flex flex-1 flex-col items-center justify-center p-4 sm:p-6 md:p-8">
         <div className="w-full max-w-lg text-center">
           <WelcomeCarousel slides={slides} setApi={setApi} />
