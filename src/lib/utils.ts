@@ -11,4 +11,15 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Add any other utility functions here
+/**
+ * Normalizes a string by converting to lowercase and removing diacritics.
+ * @param str - The input string.
+ * @returns The normalized string.
+ */
+export function normalizeString(str: string): string {
+  if (!str) return ''
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}

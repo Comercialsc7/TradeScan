@@ -9,7 +9,7 @@ import {
 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, normalizeString } from '@/lib/utils'
 import { customers } from '@/lib/mock-data'
 
 const SearchCustomerPage = () => {
@@ -24,19 +24,28 @@ const SearchCustomerPage = () => {
   }, [])
 
   const filteredCustomers = useMemo(() => {
-    if (!searchTerm) {
+    const trimmedSearchTerm = searchTerm.trim()
+    if (!trimmedSearchTerm) {
       return customers
     }
-    const lowercasedSearchTerm = searchTerm.toLowerCase()
-    const numericSearchTerm = searchTerm.replace(/[^\d]/g, '')
 
-    return customers.filter(
-      (customer) =>
-        customer.name.toLowerCase().includes(lowercasedSearchTerm) ||
-        customer.id.includes(searchTerm) ||
-        customer.cnpj.replace(/[^\d]/g, '').includes(numericSearchTerm) ||
-        customer.rede.toLowerCase().includes(lowercasedSearchTerm),
-    )
+    const normalizedSearchTerm = normalizeString(trimmedSearchTerm)
+    const numericSearchTerm = trimmedSearchTerm.replace(/[^\d]/g, '')
+
+    return customers.filter((customer) => {
+      const matchesName = normalizeString(customer.name).includes(
+        normalizedSearchTerm,
+      )
+      const matchesId = customer.id.includes(trimmedSearchTerm)
+      const matchesCnpj =
+        numericSearchTerm.length > 0 &&
+        customer.cnpj.replace(/[^\d]/g, '').includes(numericSearchTerm)
+      const matchesRede = normalizeString(customer.rede).includes(
+        normalizedSearchTerm,
+      )
+
+      return matchesName || matchesId || matchesCnpj || matchesRede
+    })
   }, [searchTerm])
 
   const handleCustomerSelect = (customerId: string) => {
