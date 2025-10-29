@@ -15,7 +15,12 @@ const App = () => (
   <BrowserRouter
     future={{ v7_startTransition: false, v7_relativeSplatPath: false }}
   >
-    <ThemeProvider defaultTheme="light" storageKey="payapp-ui-theme">
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="light"
+      storageKey="payapp-ui-theme"
+      disableTransitionOnChange
+    >
       <TooltipProvider>
         <Toaster />
         <Sonner />
