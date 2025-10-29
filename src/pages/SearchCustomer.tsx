@@ -1,15 +1,15 @@
 import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, Search, ChevronRight, ScanLine, Store } from 'lucide-react'
+import {
+  ArrowLeft,
+  Search,
+  ChevronRight,
+  ScanLine,
+  CheckCircle2,
+} from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 
 type Customer = {
   id: string
@@ -43,15 +43,11 @@ const customers: Customer[] = [
   },
 ]
 
-const stores = [
-  { id: '1', name: 'Loja Principal' },
-  { id: '2', name: 'Loja Filial Centro' },
-  { id: '3', name: 'Loja Filial Norte' },
-]
-
 const SearchCustomerPage = () => {
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedStore, setSelectedStore] = useState(stores[0].id)
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
+    null,
+  )
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -69,6 +65,10 @@ const SearchCustomerPage = () => {
     )
   }, [searchTerm])
 
+  const handleCustomerSelect = (customerId: string) => {
+    setSelectedCustomerId(customerId)
+  }
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4">
@@ -82,24 +82,6 @@ const SearchCustomerPage = () => {
       </header>
 
       <main className="flex-1 overflow-y-auto p-4">
-        <div className="mb-4">
-          <Select value={selectedStore} onValueChange={setSelectedStore}>
-            <SelectTrigger className="h-14 w-full rounded-xl border-none bg-zinc-200 pl-4 text-zinc-900 dark:bg-zinc-800/50 dark:text-white">
-              <div className="flex items-center">
-                <Store className="mr-3 h-5 w-5 text-zinc-500 dark:text-zinc-400" />
-                <SelectValue placeholder="Selecione uma loja" />
-              </div>
-            </SelectTrigger>
-            <SelectContent>
-              {stores.map((store) => (
-                <SelectItem key={store.id} value={store.id}>
-                  {store.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
         <div className="relative mb-4">
           <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
           <Input
@@ -115,8 +97,14 @@ const SearchCustomerPage = () => {
           {filteredCustomers.map((customer) => (
             <div
               key={customer.id}
-              className="flex cursor-pointer items-center space-x-4 rounded-lg p-3 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/50"
-              onClick={() => console.log(`Selected customer ${customer.id}`)}
+              className={cn(
+                'flex cursor-pointer items-center space-x-4 rounded-lg p-3 transition-colors hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
+                {
+                  'bg-primary/10 dark:bg-primary/20':
+                    selectedCustomerId === customer.id,
+                },
+              )}
+              onClick={() => handleCustomerSelect(customer.id)}
             >
               <div className="flex-1">
                 <p className="font-semibold text-zinc-900 dark:text-white">
@@ -126,7 +114,11 @@ const SearchCustomerPage = () => {
                   ID do Cliente: {customer.id}
                 </p>
               </div>
-              <ChevronRight className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+              {selectedCustomerId === customer.id ? (
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+              ) : (
+                <ChevronRight className="h-5 w-5 text-zinc-400 dark:text-zinc-500" />
+              )}
             </div>
           ))}
         </div>
