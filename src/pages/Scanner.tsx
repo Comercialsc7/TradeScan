@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, ChangeEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   X,
   Zap,
@@ -14,11 +14,16 @@ import { useCamera } from '@/hooks/useCamera'
 import { cn } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { toast } from '@/components/ui/use-toast'
+import { products } from '@/lib/mock-data'
 
 const ScannerPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const customerId = location.state?.customerId
+
   const {
     stream,
     permissionStatus,
@@ -26,6 +31,17 @@ const ScannerPage = () => {
     getCameraPermission,
     isFlashlightOn,
   } = useCamera()
+
+  useEffect(() => {
+    if (!customerId) {
+      toast({
+        title: 'Cliente não selecionado',
+        description: 'Por favor, selecione um cliente antes de escanear.',
+        variant: 'destructive',
+      })
+      navigate('/search-customer')
+    }
+  }, [customerId, navigate])
 
   useEffect(() => {
     document.title = 'Escanear Código - TradeScan'
@@ -46,6 +62,20 @@ const ScannerPage = () => {
     }
   }, [stream])
 
+  const handleBarcodeDetected = (barcode: string) => {
+    const product = products.find((p) => p.barcode === barcode)
+    if (product) {
+      navigate(`/customer/${customerId}/product/${barcode}`)
+    } else {
+      toast({
+        title: 'Produto não encontrado',
+        description:
+          'Nenhum produto corresponde ao código de barras escaneado.',
+        variant: 'destructive',
+      })
+    }
+  }
+
   useEffect(() => {
     if (permissionStatus !== 'granted' || !stream || !videoRef.current) return
 
@@ -64,17 +94,20 @@ const ScannerPage = () => {
     })
 
     let intervalId: number
+    let detectionInProgress = false
 
     const detectBarcode = async () => {
-      if (videoRef.current && videoRef.current.readyState === 4) {
+      if (
+        videoRef.current &&
+        videoRef.current.readyState === 4 &&
+        !detectionInProgress
+      ) {
         try {
           const barcodes = await barcodeDetector.detect(videoRef.current)
           if (barcodes.length > 0) {
-            toast({
-              title: 'Código de Barras Detectado',
-              description: `Valor: ${barcodes[0].rawValue}`,
-            })
+            detectionInProgress = true
             clearInterval(intervalId)
+            handleBarcodeDetected(barcodes[0].rawValue)
           }
         } catch (error) {
           console.error('Barcode detection failed:', error)
@@ -87,7 +120,7 @@ const ScannerPage = () => {
     return () => {
       clearInterval(intervalId)
     }
-  }, [permissionStatus, stream])
+  }, [permissionStatus, stream, customerId, navigate])
 
   const handleGalleryClick = () => {
     if (isProcessing) return
@@ -120,10 +153,7 @@ const ScannerPage = () => {
       const barcodes = await barcodeDetector.detect(imageBitmap)
 
       if (barcodes.length > 0) {
-        toast({
-          title: 'Código de Barras Detectado',
-          description: `Valor: ${barcodes[0].rawValue}`,
-        })
+        handleBarcodeDetected(barcodes[0].rawValue)
       } else {
         toast({
           title: 'Nenhum código encontrado',
@@ -262,7 +292,7 @@ const ScannerPage = () => {
               className="h-12 w-12 rounded-full bg-black/40 p-0 text-white transition-colors hover:bg-black/50"
               disabled={isProcessing}
             >
-              <Link to="/manual-entry">
+              <Link to="/manual-entry" state={{ customerId }}>
                 <Keyboard className="h-6 w-6" />
               </Link>
             </Button>

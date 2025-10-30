@@ -54,7 +54,7 @@ const SearchCustomerPage = () => {
 
   const handleScan = () => {
     if (selectedCustomerId) {
-      navigate('/scanner')
+      navigate('/scanner', { state: { customerId: selectedCustomerId } })
     }
   }
 

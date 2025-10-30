@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, Search, XCircle } from 'lucide-react'
@@ -15,13 +15,25 @@ import {
 } from '@/components/ui/form'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { manualEntrySchema, type ManualEntrySchema } from '@/lib/schemas'
-import { products, type Product } from '@/lib/mock-data'
-import { ProductDetailsCard } from '@/components/product/ProductDetailsCard'
+import { products } from '@/lib/mock-data'
+import { toast } from '@/components/ui/use-toast'
 
 const ManualEntryPage = () => {
-  const [foundProduct, setFoundProduct] = useState<Product | null>(null)
   const [notFound, setNotFound] = useState(false)
   const navigate = useNavigate()
+  const location = useLocation()
+  const customerId = location.state?.customerId
+
+  useEffect(() => {
+    if (!customerId) {
+      toast({
+        title: 'Cliente não selecionado',
+        description: 'Por favor, selecione um cliente antes de continuar.',
+        variant: 'destructive',
+      })
+      navigate('/search-customer')
+    }
+  }, [customerId, navigate])
 
   useEffect(() => {
     document.title = 'Digitar Código - TradeScan'
@@ -36,12 +48,10 @@ const ManualEntryPage = () => {
 
   const onSubmit = (data: ManualEntrySchema) => {
     setNotFound(false)
-    setFoundProduct(null)
-
     const product = products.find((p) => p.barcode === data.barcode)
 
     if (product) {
-      setFoundProduct(product)
+      navigate(`/customer/${customerId}/product/${data.barcode}`)
     } else {
       setNotFound(true)
     }
@@ -107,8 +117,6 @@ const ManualEntryPage = () => {
             </AlertDescription>
           </Alert>
         )}
-
-        {foundProduct && <ProductDetailsCard product={foundProduct} />}
       </main>
     </div>
   )

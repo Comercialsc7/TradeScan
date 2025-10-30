@@ -74,36 +74,63 @@ export const customers: Customer[] = [
 
 export type Product = {
   barcode: string
+  sku: string
   name: string
-  brand: string
-  price: number
-  margin: number
+  description: string
+  saleId: string
   lastPurchaseDate: string
+  lastCost: number
+  margin: number
+  stock: number
+  retailPrice: number
+  salesLast30Days: number
+  brand: string
 }
 
 export const products: Product[] = [
   {
     barcode: '7891000315507',
+    sku: '8934-22A',
     name: 'Coca-Cola 2L',
-    brand: 'Coca-Cola',
-    price: 8.5,
+    description:
+      'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
+    saleId: '#54823',
+    lastPurchaseDate: '2025-10-12',
+    lastCost: 5.5,
     margin: 0.35,
-    lastPurchaseDate: '2025-10-15',
+    stock: 25,
+    retailPrice: 8.5,
+    salesLast30Days: 150,
+    brand: 'Coca-Cola',
   },
   {
     barcode: '7891991010836',
+    sku: '7431-45B',
     name: 'Salgadinho Doritos Queijo Nacho 140g',
-    brand: 'Elma Chips',
-    price: 9.99,
-    margin: 0.4,
+    description:
+      'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
+    saleId: '#54824',
     lastPurchaseDate: '2025-10-20',
+    lastCost: 6.0,
+    margin: 0.4,
+    stock: 40,
+    retailPrice: 9.99,
+    salesLast30Days: 200,
+    brand: 'Elma Chips',
   },
   {
     barcode: '7896065800034',
+    sku: '1234-99C',
     name: 'Leite Integral Italac 1L',
-    brand: 'Italac',
-    price: 4.29,
-    margin: 0.25,
+    description:
+      'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
+    saleId: '#54825',
     lastPurchaseDate: '2025-10-22',
+    lastCost: 3.2,
+    margin: 0.25,
+    stock: 120,
+    retailPrice: 4.29,
+    salesLast30Days: 500,
+    brand: 'Italac',
   },
 ]
