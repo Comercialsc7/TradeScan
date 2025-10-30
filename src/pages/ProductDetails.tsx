@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { customers, products } from '@/lib/mock-data'
+import { customers, products, sales } from '@/lib/mock-data'
 import { ProductStatsGrid } from '@/components/product/ProductStatsGrid'
+import { SalesHistoryTable } from '@/components/product/SalesHistoryTable'
 
 const ProductDetailsPage = () => {
   const { customerId, barcode } = useParams<{
@@ -13,25 +14,33 @@ const ProductDetailsPage = () => {
   }>()
   const navigate = useNavigate()
 
-  const customer = customers.find((c) => c.id === customerId)
-  const product = products.find((p) => p.barcode === barcode)
+  const customer = useMemo(
+    () => customers.find((c) => c.id === customerId),
+    [customerId],
+  )
+  const product = useMemo(
+    () => products.find((p) => p.barcode === barcode),
+    [barcode],
+  )
+  const productSales = useMemo(
+    () =>
+      sales
+        .filter((s) => s.CLIENTE === customerId && s.PRODUTO === barcode)
+        .sort(
+          (a, b) =>
+            new Date(b.DATA_FATURAMENTO).getTime() -
+            new Date(a.DATA_FATURAMENTO).getTime(),
+        ),
+    [customerId, barcode],
+  )
 
   useEffect(() => {
     document.title = 'Detalhes do Produto - TradeScan'
-    const originalThemeIsDark =
-      document.documentElement.classList.contains('dark')
-    document.documentElement.classList.add('dark')
-
-    return () => {
-      if (!originalThemeIsDark) {
-        document.documentElement.classList.remove('dark')
-      }
-    }
   }, [])
 
   if (!customer || !product) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-background text-center">
+      <div className="flex h-screen flex-col items-center justify-center bg-background p-4 text-center">
         <h1 className="text-2xl font-bold">Informação não encontrada</h1>
         <p className="text-muted-foreground">
           Os detalhes do cliente ou do produto não foram encontrados.
@@ -47,9 +56,9 @@ const ProductDetailsPage = () => {
     <div className="flex h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4">
         <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-6 w-6 text-zinc-900 dark:text-white" />
+          <ArrowLeft className="h-6 w-6" />
         </Button>
-        <h1 className="flex-1 text-center text-lg font-semibold text-zinc-900 dark:text-white">
+        <h1 className="flex-1 text-center text-lg font-semibold">
           Detalhes do Produto
         </h1>
         <div className="w-10" />
@@ -66,12 +75,13 @@ const ProductDetailsPage = () => {
           <CardContent>
             <p className="text-muted-foreground">{product.description}</p>
             <p className="mt-4 text-sm font-medium text-muted-foreground">
-              ID da Venda: {product.saleId}
+              Cliente: {customer.name}
             </p>
           </CardContent>
         </Card>
 
-        <ProductStatsGrid product={product} />
+        <ProductStatsGrid product={product} sales={productSales} />
+        <SalesHistoryTable sales={productSales} />
       </main>
     </div>
   )

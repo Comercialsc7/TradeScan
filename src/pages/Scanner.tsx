@@ -1,14 +1,6 @@
 import { useEffect, useRef, useState, ChangeEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import {
-  X,
-  Zap,
-  Image,
-  VideoOff,
-  Loader2,
-  Keyboard,
-  ScanLine as ScanLineIcon,
-} from 'lucide-react'
+import { X, Zap, Image, VideoOff, Loader2, Keyboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCamera } from '@/hooks/useCamera'
 import { cn } from '@/lib/utils'
@@ -45,15 +37,6 @@ const ScannerPage = () => {
 
   useEffect(() => {
     document.title = 'Escanear Código - TradeScan'
-    const originalThemeIsDark =
-      document.documentElement.classList.contains('dark')
-    document.documentElement.classList.add('dark')
-
-    return () => {
-      if (!originalThemeIsDark) {
-        document.documentElement.classList.remove('dark')
-      }
-    }
   }, [])
 
   useEffect(() => {

@@ -1,3 +1,5 @@
+import { subDays } from 'date-fns'
+
 export type Customer = {
   id: string
   name: string
@@ -40,36 +42,6 @@ export const customers: Customer[] = [
     endereco: 'Praça da Sé, 789, Centro',
     telefone: '(21) 97777-9012',
   },
-  {
-    id: '987654',
-    name: 'Mercado da Esquina',
-    cnpj: '44.555.666/0001-77',
-    rede: 'Rede Sol',
-    segmento: 'Varejo',
-    cidade: 'Belo Horizonte - MG',
-    endereco: 'Rua dos Andradas, 101, Savassi',
-    telefone: '(31) 96666-3456',
-  },
-  {
-    id: '321654',
-    name: 'Empório Bom Preço',
-    cnpj: '77.888.999/0001-00',
-    rede: 'Rede Forte',
-    segmento: 'Varejo',
-    cidade: 'Curitiba - PR',
-    endereco: 'Alameda dos Anjos, 202, Batel',
-    telefone: '(41) 95555-7890',
-  },
-  {
-    id: '654987',
-    name: 'Minimercado Central',
-    cnpj: '22.333.444/0001-55',
-    rede: 'Rede União',
-    segmento: 'Varejo',
-    cidade: 'Porto Alegre - RS',
-    endereco: 'Avenida Ipiranga, 303, Moinhos de Vento',
-    telefone: '(51) 94444-1234',
-  },
 ]
 
 export type Product = {
@@ -77,14 +49,10 @@ export type Product = {
   sku: string
   name: string
   description: string
-  saleId: string
-  lastPurchaseDate: string
-  lastCost: number
-  margin: number
+  brand: string
   stock: number
   retailPrice: number
-  salesLast30Days: number
-  brand: string
+  baseCost: number
 }
 
 export const products: Product[] = [
@@ -94,14 +62,10 @@ export const products: Product[] = [
     name: 'Coca-Cola 2L',
     description:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
-    saleId: '#54823',
-    lastPurchaseDate: '2025-10-12',
-    lastCost: 5.5,
-    margin: 0.35,
+    brand: 'Coca-Cola',
     stock: 25,
     retailPrice: 8.5,
-    salesLast30Days: 150,
-    brand: 'Coca-Cola',
+    baseCost: 5.5,
   },
   {
     barcode: '7891991010836',
@@ -109,14 +73,10 @@ export const products: Product[] = [
     name: 'Salgadinho Doritos Queijo Nacho 140g',
     description:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
-    saleId: '#54824',
-    lastPurchaseDate: '2025-10-20',
-    lastCost: 6.0,
-    margin: 0.4,
+    brand: 'Elma Chips',
     stock: 40,
     retailPrice: 9.99,
-    salesLast30Days: 200,
-    brand: 'Elma Chips',
+    baseCost: 6.0,
   },
   {
     barcode: '7896065800034',
@@ -124,13 +84,115 @@ export const products: Product[] = [
     name: 'Leite Integral Italac 1L',
     description:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
-    saleId: '#54825',
-    lastPurchaseDate: '2025-10-22',
-    lastCost: 3.2,
-    margin: 0.25,
+    brand: 'Italac',
     stock: 120,
     retailPrice: 4.29,
-    salesLast30Days: 500,
-    brand: 'Italac',
+    baseCost: 3.2,
+  },
+]
+
+export type Sale = {
+  NRO_PEDIDO: string
+  DATA_INCLUSAO: string
+  NRO_NFE: string
+  DATA_FATURAMENTO: string
+  PRODUTO: string // barcode
+  FORNECEDOR: string
+  VENDEDOR: string
+  CLIENTE: string // customer id
+  SITUACAO: 'Faturado' | 'Pendente' | 'Cancelado'
+  VALOR: number
+  QTDE_EMB: number
+  EMBALAGEM: string
+  QTDE_EMBALAGEM: number
+  QTDE_FORMA_EMBALAGEM: number
+  CGO: string
+}
+
+export const sales: Sale[] = [
+  {
+    NRO_PEDIDO: 'PED1001',
+    DATA_INCLUSAO: subDays(new Date(), 15).toISOString(),
+    NRO_NFE: 'NFE001',
+    DATA_FATURAMENTO: subDays(new Date(), 12).toISOString(),
+    PRODUTO: '7891000315507',
+    FORNECEDOR: 'Distribuidora de Bebidas ABC',
+    VENDEDOR: 'João Silva',
+    CLIENTE: '789123',
+    SITUACAO: 'Faturado',
+    VALOR: 850.0,
+    QTDE_EMB: 100,
+    EMBALAGEM: 'Unidade',
+    QTDE_EMBALAGEM: 1,
+    QTDE_FORMA_EMBALAGEM: 100,
+    CGO: '1234',
+  },
+  {
+    NRO_PEDIDO: 'PED1002',
+    DATA_INCLUSAO: subDays(new Date(), 45).toISOString(),
+    NRO_NFE: 'NFE002',
+    DATA_FATURAMENTO: subDays(new Date(), 40).toISOString(),
+    PRODUTO: '7891000315507',
+    FORNECEDOR: 'Distribuidora de Bebidas ABC',
+    VENDEDOR: 'João Silva',
+    CLIENTE: '789123',
+    SITUACAO: 'Faturado',
+    VALOR: 425.0,
+    QTDE_EMB: 50,
+    EMBALAGEM: 'Unidade',
+    QTDE_EMBALAGEM: 1,
+    QTDE_FORMA_EMBALAGEM: 50,
+    CGO: '1234',
+  },
+  {
+    NRO_PEDIDO: 'PED1003',
+    DATA_INCLUSAO: subDays(new Date(), 10).toISOString(),
+    NRO_NFE: 'NFE003',
+    DATA_FATURAMENTO: subDays(new Date(), 8).toISOString(),
+    PRODUTO: '7891991010836',
+    FORNECEDOR: 'Atacado de Snacks XYZ',
+    VENDEDOR: 'Maria Oliveira',
+    CLIENTE: '456789',
+    SITUACAO: 'Faturado',
+    VALOR: 1998.0,
+    QTDE_EMB: 200,
+    EMBALAGEM: 'Unidade',
+    QTDE_EMBALAGEM: 1,
+    QTDE_FORMA_EMBALAGEM: 200,
+    CGO: '5678',
+  },
+  {
+    NRO_PEDIDO: 'PED1004',
+    DATA_INCLUSAO: subDays(new Date(), 5).toISOString(),
+    NRO_NFE: 'NFE004',
+    DATA_FATURAMENTO: subDays(new Date(), 2).toISOString(),
+    PRODUTO: '7896065800034',
+    FORNECEDOR: 'Laticínios Sul',
+    VENDEDOR: 'Carlos Pereira',
+    CLIENTE: '123456',
+    SITUACAO: 'Faturado',
+    VALOR: 1287.0,
+    QTDE_EMB: 300,
+    EMBALAGEM: 'Caixa',
+    QTDE_EMBALAGEM: 12,
+    QTDE_FORMA_EMBALAGEM: 25,
+    CGO: '9101',
+  },
+  {
+    NRO_PEDIDO: 'PED1005',
+    DATA_INCLUSAO: subDays(new Date(), 25).toISOString(),
+    NRO_NFE: 'NFE005',
+    DATA_FATURAMENTO: subDays(new Date(), 22).toISOString(),
+    PRODUTO: '7896065800034',
+    FORNECEDOR: 'Laticínios Sul',
+    VENDEDOR: 'Carlos Pereira',
+    CLIENTE: '789123',
+    SITUACAO: 'Faturado',
+    VALOR: 214.5,
+    QTDE_EMB: 50,
+    EMBALAGEM: 'Unidade',
+    QTDE_EMBALAGEM: 1,
+    QTDE_FORMA_EMBALAGEM: 50,
+    CGO: '9101',
   },
 ]

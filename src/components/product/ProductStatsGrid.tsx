@@ -1,4 +1,4 @@
-import type { Product } from '@/lib/mock-data'
+import type { Product, Sale } from '@/lib/mock-data'
 import {
   Calendar,
   DollarSign,
@@ -8,9 +8,11 @@ import {
   TrendingUp,
   type LucideIcon,
 } from 'lucide-react'
+import { isAfter, subDays } from 'date-fns'
 
 type ProductStatsGridProps = {
   product: Product
+  sales: Sale[]
 }
 
 type Stat = {
@@ -19,24 +21,47 @@ type Stat = {
   value: string
 }
 
-export const ProductStatsGrid = ({ product }: ProductStatsGridProps) => {
+export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
+  const latestSale =
+    sales.length > 0
+      ? sales.sort(
+          (a, b) =>
+            new Date(b.DATA_FATURAMENTO).getTime() -
+            new Date(a.DATA_FATURAMENTO).getTime(),
+        )[0]
+      : null
+
+  const lastSalePrice = latestSale ? latestSale.VALOR / latestSale.QTDE_EMB : 0
+  const margin =
+    lastSalePrice > 0
+      ? ((lastSalePrice - product.baseCost) / lastSalePrice) * 100
+      : 0
+
+  const salesLast30Days = sales
+    .filter((sale) =>
+      isAfter(new Date(sale.DATA_FATURAMENTO), subDays(new Date(), 30)),
+    )
+    .reduce((acc, sale) => acc + sale.QTDE_EMB, 0)
+
   const stats: Stat[] = [
     {
       icon: Calendar,
       label: 'Última Compra',
-      value: new Date(product.lastPurchaseDate).toLocaleDateString('pt-BR', {
-        timeZone: 'UTC',
-      }),
+      value: latestSale
+        ? new Date(latestSale.DATA_FATURAMENTO).toLocaleDateString('pt-BR', {
+            timeZone: 'UTC',
+          })
+        : 'N/A',
     },
     {
       icon: DollarSign,
-      label: 'Último Custo',
-      value: `R$ ${product.lastCost.toFixed(2)}`,
+      label: 'Último Preço Venda',
+      value: `R$ ${lastSalePrice.toFixed(2)}`,
     },
     {
       icon: Percent,
       label: 'Margem de Lucro %',
-      value: `${(product.margin * 100).toFixed(0)}%`,
+      value: `${margin.toFixed(0)}%`,
     },
     {
       icon: Archive,
@@ -51,7 +76,7 @@ export const ProductStatsGrid = ({ product }: ProductStatsGridProps) => {
     {
       icon: TrendingUp,
       label: 'Vendas (30 dias)',
-      value: product.salesLast30Days.toString(),
+      value: salesLast30Days.toString(),
     },
   ]
 
