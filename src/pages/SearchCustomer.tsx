@@ -58,10 +58,14 @@ const SearchCustomerPage = () => {
     }
   }
 
+  const handleExit = () => {
+    window.location.href = '/auth'
+  }
+
   return (
     <div className="flex h-screen flex-col bg-background">
       <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate('/auth')}>
+        <Button variant="ghost" size="icon" onClick={handleExit}>
           <ArrowLeft className="h-6 w-6 text-zinc-900 dark:text-white" />
         </Button>
         <h1 className="flex-1 text-center text-lg font-semibold text-zinc-900 dark:text-white">
