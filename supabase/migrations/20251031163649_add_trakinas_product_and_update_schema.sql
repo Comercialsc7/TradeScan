@@ -5,7 +5,7 @@ ALTER TABLE public.produtos ADD COLUMN IF NOT EXISTS base_cost NUMERIC(10, 2) NO
 
 -- Insert the new product for EAN 7896336006921 if it does not already exist.
 -- This ensures the product is available for lookup via scanning or manual entry.
-INSERT INTO public.produtos (ean, sku, nome, description, brand, base_cost)
+INSERT INTO public.produtos (ean, sku, nome, descricao, brand, base_cost)
 VALUES (
     '7896336006921',
     'TRAK-CHOC-126',
