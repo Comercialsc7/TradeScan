@@ -15,7 +15,183 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clientes: {
+        Row: {
+          cidade: string | null
+          cnpj: string | null
+          codigo: string
+          created_at: string
+          endereco: string | null
+          id: string
+          nome: string
+          razao_social: string | null
+          rede: string | null
+          segmento: string | null
+          telefone: string | null
+        }
+        Insert: {
+          cidade?: string | null
+          cnpj?: string | null
+          codigo: string
+          created_at?: string
+          endereco?: string | null
+          id?: string
+          nome: string
+          razao_social?: string | null
+          rede?: string | null
+          segmento?: string | null
+          telefone?: string | null
+        }
+        Update: {
+          cidade?: string | null
+          cnpj?: string | null
+          codigo?: string
+          created_at?: string
+          endereco?: string | null
+          id?: string
+          nome?: string
+          razao_social?: string | null
+          rede?: string | null
+          segmento?: string | null
+          telefone?: string | null
+        }
+        Relationships: []
+      }
+      produtos: {
+        Row: {
+          base_cost: number
+          brand: string | null
+          ean: string
+          id: string
+          nome: string
+          sku: string
+        }
+        Insert: {
+          base_cost?: number
+          brand?: string | null
+          ean: string
+          id?: string
+          nome: string
+          sku: string
+        }
+        Update: {
+          base_cost?: number
+          brand?: string | null
+          ean?: string
+          id?: string
+          nome?: string
+          sku?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_admin: boolean
+          is_approved: boolean
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+          is_admin?: boolean
+          is_approved?: boolean
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_admin?: boolean
+          is_approved?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vendas: {
+        Row: {
+          CGO: string | null
+          CLIENTE: string
+          cliente_id: string | null
+          created_at: string
+          DATA_FATURAMENTO: string | null
+          DATA_INCLUSAO: string
+          EMBALAGEM: string | null
+          FORNECEDOR: string | null
+          id: string
+          NRO_NFE: string | null
+          NRO_PEDIDO: string
+          PRODUTO: string
+          produto_id: string | null
+          QTDE_EMB: number | null
+          QTDE_EMBALAGEM: number | null
+          QTDE_FORMA_EMBALAGEM: number | null
+          SITUACAO: string | null
+          VALOR: number
+          VENDEDOR: string | null
+        }
+        Insert: {
+          CGO?: string | null
+          CLIENTE: string
+          cliente_id?: string | null
+          created_at?: string
+          DATA_FATURAMENTO?: string | null
+          DATA_INCLUSAO?: string
+          EMBALAGEM?: string | null
+          FORNECEDOR?: string | null
+          id?: string
+          NRO_NFE?: string | null
+          NRO_PEDIDO: string
+          PRODUTO: string
+          produto_id?: string | null
+          QTDE_EMB?: number | null
+          QTDE_EMBALAGEM?: number | null
+          QTDE_FORMA_EMBALAGEM?: number | null
+          SITUACAO?: string | null
+          VALOR: number
+          VENDEDOR?: string | null
+        }
+        Update: {
+          CGO?: string | null
+          CLIENTE?: string
+          cliente_id?: string | null
+          created_at?: string
+          DATA_FATURAMENTO?: string | null
+          DATA_INCLUSAO?: string
+          EMBALAGEM?: string | null
+          FORNECEDOR?: string | null
+          id?: string
+          NRO_NFE?: string | null
+          NRO_PEDIDO?: string
+          PRODUTO?: string
+          produto_id?: string | null
+          QTDE_EMB?: number | null
+          QTDE_EMBALAGEM?: number | null
+          QTDE_FORMA_EMBALAGEM?: number | null
+          SITUACAO?: string | null
+          VALOR?: number
+          VENDEDOR?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'vendas_cliente_id_fkey'
+            columns: ['cliente_id']
+            isOneToOne: false
+            referencedRelation: 'clientes'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'vendas_produto_id_fkey'
+            columns: ['produto_id']
+            isOneToOne: false
+            referencedRelation: 'produtos'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
