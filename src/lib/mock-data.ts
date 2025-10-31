@@ -48,11 +48,9 @@ export type Product = {
   barcode: string
   sku: string
   name: string
-  description: string
-  brand: string
-  stock: number
-  retailPrice: number
-  baseCost: number
+  descricao: string | null
+  brand: string | null
+  base_cost: number
 }
 
 export const products: Product[] = [
@@ -60,45 +58,37 @@ export const products: Product[] = [
     barcode: '7891000315507',
     sku: '8934-22A',
     name: 'Coca-Cola 2L',
-    description:
+    descricao:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
     brand: 'Coca-Cola',
-    stock: 25,
-    retailPrice: 8.5,
-    baseCost: 5.5,
+    base_cost: 5.5,
   },
   {
     barcode: '7891991010836',
     sku: '7431-45B',
     name: 'Salgadinho Doritos Queijo Nacho 140g',
-    description:
+    descricao:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
     brand: 'Elma Chips',
-    stock: 40,
-    retailPrice: 9.99,
-    baseCost: 6.0,
+    base_cost: 6.0,
   },
   {
     barcode: '7896065800034',
     sku: '1234-99C',
     name: 'Leite Integral Italac 1L',
-    description:
+    descricao:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
     brand: 'Italac',
-    stock: 120,
-    retailPrice: 4.29,
-    baseCost: 3.2,
+    base_cost: 3.2,
   },
   {
     barcode: '7896336006921',
     sku: 'TRAK-CHOC-126',
     name: 'Biscoito Trakinas Chocolate 126g',
-    description:
+    descricao:
       'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
     brand: 'Trakinas',
-    stock: 80,
-    retailPrice: 2.99,
-    baseCost: 1.8,
+    base_cost: 1.8,
   },
 ]
 

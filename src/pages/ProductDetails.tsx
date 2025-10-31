@@ -73,7 +73,7 @@ const ProductDetailsPage = () => {
             <CardTitle className="text-2xl">{product.name}</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">{product.description}</p>
+            <p className="text-muted-foreground">{product.descricao}</p>
             <p className="mt-4 text-sm font-medium text-muted-foreground">
               Cliente: {customer.name}
             </p>

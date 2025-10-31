@@ -61,6 +61,7 @@ export type Database = {
         Row: {
           base_cost: number
           brand: string | null
+          descricao: string | null
           ean: string
           id: string
           nome: string
@@ -69,6 +70,7 @@ export type Database = {
         Insert: {
           base_cost?: number
           brand?: string | null
+          descricao?: string | null
           ean: string
           id?: string
           nome: string
@@ -77,6 +79,7 @@ export type Database = {
         Update: {
           base_cost?: number
           brand?: string | null
+          descricao?: string | null
           ean?: string
           id?: string
           nome?: string

@@ -3,8 +3,6 @@ import {
   Calendar,
   DollarSign,
   Percent,
-  Archive,
-  Tag,
   TrendingUp,
   type LucideIcon,
 } from 'lucide-react'
@@ -34,7 +32,7 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
   const lastSalePrice = latestSale ? latestSale.VALOR / latestSale.QTDE_EMB : 0
   const margin =
     lastSalePrice > 0
-      ? ((lastSalePrice - product.baseCost) / lastSalePrice) * 100
+      ? ((lastSalePrice - product.base_cost) / lastSalePrice) * 100
       : 0
 
   const salesLast30Days = sales
@@ -64,16 +62,6 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
       value: `${margin.toFixed(0)}%`,
     },
     {
-      icon: Archive,
-      label: 'Estoque Disponível',
-      value: `${product.stock} unidades`,
-    },
-    {
-      icon: Tag,
-      label: 'Preço de Varejo',
-      value: `R$ ${product.retailPrice.toFixed(2)}`,
-    },
-    {
       icon: TrendingUp,
       label: 'Vendas (30 dias)',
       value: salesLast30Days.toString(),
@@ -81,7 +69,7 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
   ]
 
   return (
-    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="mt-6 grid grid-cols-2 gap-4">
       {stats.map((stat) => (
         <div
           key={stat.label}
