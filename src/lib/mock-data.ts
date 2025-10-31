@@ -89,6 +89,17 @@ export const products: Product[] = [
     retailPrice: 4.29,
     baseCost: 3.2,
   },
+  {
+    barcode: '7896336006921',
+    sku: 'TRAK-CHOC-126',
+    name: 'Biscoito Trakinas Chocolate 126g',
+    description:
+      'Um parágrafo curto e de preenchimento sobre as características, benefícios e categoria do produto, fornecendo informações essenciais ao usuário rapidamente.',
+    brand: 'Trakinas',
+    stock: 80,
+    retailPrice: 2.99,
+    baseCost: 1.8,
+  },
 ]
 
 export type Sale = {
@@ -194,5 +205,22 @@ export const sales: Sale[] = [
     QTDE_EMBALAGEM: 1,
     QTDE_FORMA_EMBALAGEM: 50,
     CGO: '9101',
+  },
+  {
+    NRO_PEDIDO: 'PED1006',
+    DATA_INCLUSAO: subDays(new Date(), 20).toISOString(),
+    NRO_NFE: 'NFE006',
+    DATA_FATURAMENTO: subDays(new Date(), 18).toISOString(),
+    PRODUTO: '7896336006921',
+    FORNECEDOR: 'Atacado de Doces ZYX',
+    VENDEDOR: 'Ana Costa',
+    CLIENTE: '789123',
+    SITUACAO: 'Faturado',
+    VALOR: 239.2,
+    QTDE_EMB: 80,
+    EMBALAGEM: 'Unidade',
+    QTDE_EMBALAGEM: 1,
+    QTDE_FORMA_EMBALAGEM: 80,
+    CGO: '4321',
   },
 ]
