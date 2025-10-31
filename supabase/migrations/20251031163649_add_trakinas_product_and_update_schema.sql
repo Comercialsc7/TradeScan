@@ -1,7 +1,8 @@
 -- Add missing columns to the produtos table to align with application requirements.
--- The frontend components rely on 'brand' and 'base_cost' for displaying product details.
+-- The frontend components rely on 'brand', 'base_cost', and 'descricao' for displaying product details.
 ALTER TABLE public.produtos ADD COLUMN IF NOT EXISTS brand TEXT;
 ALTER TABLE public.produtos ADD COLUMN IF NOT EXISTS base_cost NUMERIC(10, 2) NOT NULL DEFAULT 0.00;
+ALTER TABLE public.produtos ADD COLUMN IF NOT EXISTS descricao TEXT;
 
 -- Insert the new product for EAN 7896336006921 if it does not already exist.
 -- This ensures the product is available for lookup via scanning or manual entry.
