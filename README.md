@@ -1,0 +1,2 @@
+# TradeScan
+sistema do Claudio
