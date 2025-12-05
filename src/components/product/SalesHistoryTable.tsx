@@ -1,4 +1,3 @@
-import type { Sale } from '@/lib/mock-data'
 import {
   Table,
   TableBody,
@@ -9,6 +8,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
+import type { Sale } from '@/services/sales'
 
 type SalesHistoryTableProps = {
   sales: Sale[]
@@ -18,8 +18,9 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
   if (sales.length === 0) {
     return (
       <div className="mt-6 rounded-lg border bg-card p-6 text-center text-card-foreground">
+        <h3 className="mb-2 text-lg font-semibold">Histórico de Vendas</h3>
         <p className="text-muted-foreground">
-          Nenhum histórico de vendas encontrado para este produto.
+          Nenhum histórico de vendas disponível
         </p>
       </div>
     )
@@ -40,13 +41,20 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
           </TableHeader>
           <TableBody>
             {sales.map((sale) => (
-              <TableRow key={sale.NRO_PEDIDO}>
+              <TableRow key={sale.id}>
                 <TableCell>
-                  {new Date(sale.DATA_FATURAMENTO).toLocaleDateString('pt-BR', {
-                    timeZone: 'UTC',
-                  })}
+                  {sale.DATA_FATURAMENTO
+                    ? new Date(sale.DATA_FATURAMENTO).toLocaleDateString(
+                        'pt-BR',
+                        {
+                          timeZone: 'UTC',
+                        },
+                      )
+                    : '-'}
                 </TableCell>
-                <TableCell className="text-center">{sale.QTDE_EMB}</TableCell>
+                <TableCell className="text-center">
+                  {sale.QTDE_EMB || 0}
+                </TableCell>
                 <TableCell className="text-right">
                   {`R$ ${sale.VALOR.toFixed(2)}`}
                 </TableCell>
@@ -62,7 +70,7 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
                     })}
                     variant="secondary"
                   >
-                    {sale.SITUACAO}
+                    {sale.SITUACAO || 'Desconhecido'}
                   </Badge>
                 </TableCell>
               </TableRow>

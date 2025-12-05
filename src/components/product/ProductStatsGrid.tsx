@@ -1,4 +1,3 @@
-import type { Product, Sale } from '@/lib/mock-data'
 import {
   Calendar,
   DollarSign,
@@ -7,6 +6,8 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { isAfter, subDays } from 'date-fns'
+import type { Product } from '@/services/products'
+import type { Sale } from '@/services/sales'
 
 type ProductStatsGridProps = {
   product: Product
@@ -24,12 +25,14 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
     sales.length > 0
       ? sales.sort(
           (a, b) =>
-            new Date(b.DATA_FATURAMENTO).getTime() -
-            new Date(a.DATA_FATURAMENTO).getTime(),
+            new Date(b.DATA_FATURAMENTO || 0).getTime() -
+            new Date(a.DATA_FATURAMENTO || 0).getTime(),
         )[0]
       : null
 
-  const lastSalePrice = latestSale ? latestSale.VALOR / latestSale.QTDE_EMB : 0
+  const lastSalePrice = latestSale
+    ? latestSale.VALOR / (latestSale.QTDE_EMB || 1)
+    : 0
   const margin =
     lastSalePrice > 0
       ? ((lastSalePrice - product.base_cost) / lastSalePrice) * 100
@@ -37,19 +40,22 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
 
   const salesLast30Days = sales
     .filter((sale) =>
-      isAfter(new Date(sale.DATA_FATURAMENTO), subDays(new Date(), 30)),
+      sale.DATA_FATURAMENTO
+        ? isAfter(new Date(sale.DATA_FATURAMENTO), subDays(new Date(), 30))
+        : false,
     )
-    .reduce((acc, sale) => acc + sale.QTDE_EMB, 0)
+    .reduce((acc, sale) => acc + (sale.QTDE_EMB || 0), 0)
 
   const stats: Stat[] = [
     {
       icon: Calendar,
       label: 'Última Compra',
-      value: latestSale
-        ? new Date(latestSale.DATA_FATURAMENTO).toLocaleDateString('pt-BR', {
-            timeZone: 'UTC',
-          })
-        : 'N/A',
+      value:
+        latestSale && latestSale.DATA_FATURAMENTO
+          ? new Date(latestSale.DATA_FATURAMENTO).toLocaleDateString('pt-BR', {
+              timeZone: 'UTC',
+            })
+          : 'N/A',
     },
     {
       icon: DollarSign,

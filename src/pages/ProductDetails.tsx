@@ -1,11 +1,14 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { customers, products, sales } from '@/lib/mock-data'
 import { ProductStatsGrid } from '@/components/product/ProductStatsGrid'
 import { SalesHistoryTable } from '@/components/product/SalesHistoryTable'
+import { getProductByBarcode, type Product } from '@/services/products'
+import { getCustomerById, type Customer } from '@/services/customers'
+import { getSalesByCustomerAndProduct, type Sale } from '@/services/sales'
+import { toast } from '@/components/ui/use-toast'
 
 const ProductDetailsPage = () => {
   const { customerId, barcode } = useParams<{
@@ -14,36 +17,70 @@ const ProductDetailsPage = () => {
   }>()
   const navigate = useNavigate()
 
-  const customer = useMemo(
-    () => customers.find((c) => c.id === customerId),
-    [customerId],
-  )
-  const product = useMemo(
-    () => products.find((p) => p.barcode === barcode),
-    [barcode],
-  )
-  const productSales = useMemo(
-    () =>
-      sales
-        .filter((s) => s.CLIENTE === customerId && s.PRODUTO === barcode)
-        .sort(
-          (a, b) =>
-            new Date(b.DATA_FATURAMENTO).getTime() -
-            new Date(a.DATA_FATURAMENTO).getTime(),
-        ),
-    [customerId, barcode],
-  )
+  const [customer, setCustomer] = useState<Customer | null>(null)
+  const [product, setProduct] = useState<Product | null>(null)
+  const [productSales, setProductSales] = useState<Sale[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     document.title = 'Detalhes do Produto - TradeScan'
   }, [])
 
-  if (!customer || !product) {
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!customerId || !barcode) return
+
+      try {
+        setLoading(true)
+        setError(null)
+
+        const [customerData, productData] = await Promise.all([
+          getCustomerById(customerId),
+          getProductByBarcode(barcode),
+        ])
+
+        setCustomer(customerData)
+        setProduct(productData)
+
+        if (productData) {
+          const salesData = await getSalesByCustomerAndProduct(
+            customerId,
+            barcode,
+          )
+          setProductSales(salesData)
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err)
+        setError('Erro ao carregar informações.')
+        toast({
+          title: 'Erro',
+          description: 'Não foi possível carregar os dados do produto.',
+          variant: 'destructive',
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [customerId, barcode])
+
+  if (loading) {
+    return (
+      <div className="flex h-screen flex-col items-center justify-center bg-background p-4">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Carregando dados...</p>
+      </div>
+    )
+  }
+
+  if (error || !product || !customer) {
     return (
       <div className="flex h-screen flex-col items-center justify-center bg-background p-4 text-center">
-        <h1 className="text-2xl font-bold">Informação não encontrada</h1>
+        <h1 className="text-2xl font-bold">Produto não encontrado</h1>
         <p className="text-muted-foreground">
-          Os detalhes do cliente ou do produto não foram encontrados.
+          {error || 'Os detalhes do produto não foram encontrados.'}
         </p>
         <Button asChild className="mt-4">
           <Link to="/search-customer">Voltar para a busca</Link>
@@ -70,12 +107,12 @@ const ProductDetailsPage = () => {
             <p className="text-sm font-medium text-primary">
               SKU: {product.sku}
             </p>
-            <CardTitle className="text-2xl">{product.name}</CardTitle>
+            <CardTitle className="text-2xl">{product.nome}</CardTitle>
           </CardHeader>
           <CardContent>
             <p className="text-muted-foreground">{product.descricao}</p>
             <p className="mt-4 text-sm font-medium text-muted-foreground">
-              Cliente: {customer.name}
+              Cliente: {customer.nome}
             </p>
           </CardContent>
         </Card>

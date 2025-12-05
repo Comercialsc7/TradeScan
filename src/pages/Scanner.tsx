@@ -6,7 +6,7 @@ import { useCamera } from '@/hooks/useCamera'
 import { cn } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { toast } from '@/components/ui/use-toast'
-import { products } from '@/lib/mock-data'
+import { getProductByBarcode } from '@/services/products'
 
 const ScannerPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -45,17 +45,32 @@ const ScannerPage = () => {
     }
   }, [stream])
 
-  const handleBarcodeDetected = (barcode: string) => {
-    const product = products.find((p) => p.barcode === barcode)
-    if (product) {
-      navigate(`/customer/${customerId}/product/${barcode}`)
-    } else {
+  const handleBarcodeDetected = async (barcode: string) => {
+    if (isProcessing) return
+    setIsProcessing(true)
+
+    try {
+      const product = await getProductByBarcode(barcode)
+      if (product) {
+        navigate(`/customer/${customerId}/product/${barcode}`)
+      } else {
+        toast({
+          title: 'Produto não encontrado',
+          description: `O código de barras ${barcode} não corresponde a nenhum produto cadastrado.`,
+          variant: 'destructive',
+        })
+        // Small delay to prevent rapid-fire toasts for the same invalid barcode if the user keeps pointing at it
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+      }
+    } catch (error) {
+      console.error('Error checking product:', error)
       toast({
-        title: 'Produto não encontrado',
-        description:
-          'Nenhum produto corresponde ao código de barras escaneado.',
+        title: 'Erro ao verificar produto',
+        description: 'Ocorreu um erro ao consultar o banco de dados.',
         variant: 'destructive',
       })
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -77,20 +92,17 @@ const ScannerPage = () => {
     })
 
     let intervalId: number
-    let detectionInProgress = false
 
     const detectBarcode = async () => {
       if (
         videoRef.current &&
         videoRef.current.readyState === 4 &&
-        !detectionInProgress
+        !isProcessing
       ) {
         try {
           const barcodes = await barcodeDetector.detect(videoRef.current)
           if (barcodes.length > 0) {
-            detectionInProgress = true
-            clearInterval(intervalId)
-            handleBarcodeDetected(barcodes[0].rawValue)
+            await handleBarcodeDetected(barcodes[0].rawValue)
           }
         } catch (error) {
           console.error('Barcode detection failed:', error)
@@ -103,7 +115,8 @@ const ScannerPage = () => {
     return () => {
       clearInterval(intervalId)
     }
-  }, [permissionStatus, stream, customerId, navigate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [permissionStatus, stream, customerId, navigate, isProcessing])
 
   const handleGalleryClick = () => {
     if (isProcessing) return
@@ -136,13 +149,19 @@ const ScannerPage = () => {
       const barcodes = await barcodeDetector.detect(imageBitmap)
 
       if (barcodes.length > 0) {
-        handleBarcodeDetected(barcodes[0].rawValue)
+        // Process the detected barcode using the same logic, but reset isProcessing locally inside handleBarcodeDetected first to allow it to run,
+        // actually handleBarcodeDetected sets isProcessing to true at start.
+        // Since we are already true here, let's just call the product check logic directly or refactor.
+        // Simpler: Just set isProcessing to false before calling, because handleBarcodeDetected expects to be able to take the lock.
+        setIsProcessing(false)
+        await handleBarcodeDetected(barcodes[0].rawValue)
       } else {
         toast({
           title: 'Nenhum código encontrado',
           description:
             'Não foi possível encontrar um código de barras na imagem selecionada.',
         })
+        setIsProcessing(false)
       }
     } catch (error) {
       console.error('Barcode detection from image failed:', error)
@@ -152,8 +171,8 @@ const ScannerPage = () => {
           'Ocorreu um erro ao tentar ler o código de barras da imagem.',
         variant: 'destructive',
       })
-    } finally {
       setIsProcessing(false)
+    } finally {
       if (event.target) {
         event.target.value = ''
       }
