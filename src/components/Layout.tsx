@@ -8,6 +8,6 @@ export default function Layout() {
           <Outlet />
         </div>
       </main>
-    </>
+    </div>
   )
 }

@@ -77,9 +77,8 @@ const slides = [
 ]
 
 const Index = () => {
-  const [api, setApi] = useState<CarouselApi>()
-  const [current, setCurrent] = useState(0)
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate()
+  const { logout } = useAuth()
 
   useEffect(() => {
     document.title = 'Bem-vindo - TradeScan'
