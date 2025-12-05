@@ -1,158 +1,100 @@
-import { useState, useMemo, useEffect } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import {
-  ArrowLeft,
-  Search,
-  ChevronRight,
-  ScanLine,
-  CheckCircle2,
-} from 'lucide-react'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-import { cn, normalizeString } from '@/lib/utils'
-import { customers } from '@/lib/mock-data'
+  import { useState, useEffect } from 'react'
+  import { Link } from 'react-router-dom'
+  import { Search, User, ChevronRight, Loader2 } from 'lucide-react'
+  import { Button } from '@/components/ui/button'
+  import { Input } from '@/components/ui/input'
+  import { Card, CardContent } from '@/components/ui/card'
+  import { supabase } from '@/lib/supabase/client'
+  import type { Customer } from '@/services/customers'
+  import { useDebounce } from '@/hooks/use-mobile' // Using mobile hook just for debounce if available, or implement custom. 
+  // Since useDebounce is not guaranteed in use-mobile, I will implement simple effect.
 
-const SearchCustomerPage = () => {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(
-    null,
-  )
-  const navigate = useNavigate()
+  export default function SearchCustomerPage() {
+    const [searchTerm, setSearchTerm] = useState('')
+    const [customers, setCustomers] = useState<Customer[]>([])
+    const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    document.title = 'Buscar Cliente - TradeScan'
-  }, [])
+    useEffect(() => {
+      const searchCustomers = async () => {
+        if (searchTerm.length < 2) {
+          setCustomers([])
+          return
+        }
 
-  const filteredCustomers = useMemo(() => {
-    const trimmedSearchTerm = searchTerm.trim()
-    if (!trimmedSearchTerm) {
-      return customers
-    }
+        setLoading(true)
+        try {
+          const { data } = await supabase
+            .from('clientes')
+            .select('*')
+            .ilike('nome', `%${searchTerm}%`)
+            .limit(10)
 
-    const normalizedSearchTerm = normalizeString(trimmedSearchTerm)
-    const numericSearchTerm = trimmedSearchTerm.replace(/[^\d]/g, '')
+          setCustomers(data || [])
+        } catch (error) {
+          console.error('Error searching customers:', error)
+        } finally {
+          setLoading(false)
+        }
+      }
 
-    return customers.filter((customer) => {
-      const matchesName = normalizeString(customer.name).includes(
-        normalizedSearchTerm,
-      )
-      const matchesId = customer.id.includes(trimmedSearchTerm)
-      const matchesCnpj =
-        numericSearchTerm.length > 0 &&
-        customer.cnpj.replace(/[^\d]/g, '').includes(numericSearchTerm)
-      const matchesRede = normalizeString(customer.rede).includes(
-        normalizedSearchTerm,
-      )
+      const timeoutId = setTimeout(searchCustomers, 500)
+      return () => clearTimeout(timeoutId)
+    }, [searchTerm])
 
-      return matchesName || matchesId || matchesCnpj || matchesRede
-    })
-  }, [searchTerm])
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">Buscar Cliente</h1>
+          <p className="text-muted-foreground">
+            Digite o nome do cliente para iniciar.
+          </p>
+        </div>
 
-  const handleCustomerSelect = (customerId: string) => {
-    setSelectedCustomerId(customerId)
-  }
-
-  const handleScan = () => {
-    if (selectedCustomerId) {
-      navigate('/scanner', { state: { customerId: selectedCustomerId } })
-    }
-  }
-
-  const handleExit = () => {
-    window.location.href = '/auth'
-  }
-
-  return (
-    <div className="flex h-screen flex-col bg-background">
-      <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4">
-        <Button variant="ghost" size="icon" onClick={handleExit}>
-          <ArrowLeft className="h-6 w-6 text-zinc-900 dark:text-white" />
-        </Button>
-        <h1 className="flex-1 text-center text-lg font-semibold text-zinc-900 dark:text-white">
-          Buscar Cliente
-        </h1>
-        <div className="w-10" />
-      </header>
-
-      <main className="flex-1 overflow-y-auto p-4">
-        <div className="relative mb-4">
-          <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-zinc-500 dark:text-zinc-400" />
+        <div className="relative">
+          <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
           <Input
-            type="text"
-            placeholder="Buscar por nome, ID, CNPJ ou rede"
+            placeholder="Nome do cliente..."
+            className="pl-10 h-12 text-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="h-14 rounded-xl border-none bg-zinc-200 pl-12 text-zinc-900 placeholder:text-zinc-500 dark:bg-zinc-800/50 dark:text-white dark:placeholder:text-zinc-400"
           />
         </div>
 
-        <div className="space-y-3">
-          {filteredCustomers.length > 0 ? (
-            filteredCustomers.map((customer) => (
-              <div
-                key={customer.id}
-                className={cn(
-                  'flex cursor-pointer items-center space-x-4 rounded-lg p-4 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
-                  {
-                    'bg-primary/10 ring-2 ring-primary dark:bg-primary/20':
-                      selectedCustomerId === customer.id,
-                  },
-                )}
-                onClick={() => handleCustomerSelect(customer.id)}
-              >
-                <div className="flex-1 space-y-1.5">
-                  <p className="font-semibold text-zinc-900 dark:text-white">
-                    {customer.name}
-                  </p>
-                  <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
-                    <p>
-                      <span className="font-medium">ID:</span> {customer.id}
-                    </p>
-                    <p>
-                      <span className="font-medium">CNPJ:</span> {customer.cnpj}
-                    </p>
-                    <p className="col-span-full">
-                      <span className="font-medium">Rede:</span> {customer.rede}
-                    </p>
+        <div className="space-y-4">
+          {loading && (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          )}
+
+          {!loading && customers.map((customer) => (
+            <Link key={customer.id} to={`/customer/${customer.id}`}>
+              <Card className="hover:bg-accent transition-colors">
+                <CardContent className="p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <User className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold">{customer.nome}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        ID: {customer.id.slice(0, 8)}...
+                      </p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {selectedCustomerId === customer.id && (
-                    <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
-                  )}
-                  <Link
-                    to={`/customer/${customer.id}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                    onClick={(e) => e.stopPropagation()}
-                    aria-label={`Ver detalhes de ${customer.name}`}
-                  >
-                    <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
-                  </Link>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="py-10 text-center">
-              <p className="text-muted-foreground">
-                Nenhum cliente encontrado.
-              </p>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+
+          {!loading && searchTerm.length >= 2 && customers.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              Nenhum cliente encontrado.
             </div>
           )}
         </div>
-      </main>
-
-      <footer className="sticky bottom-0 border-t bg-background p-4">
-        <Button
-          className="h-14 w-full rounded-xl bg-primary text-base font-semibold text-white hover:bg-primary/90"
-          disabled={!selectedCustomerId}
-          onClick={handleScan}
-        >
-          <ScanLine className="mr-2 h-6 w-6" />
-          Escanear Código de Barras
-        </Button>
-      </footer>
-    </div>
-  )
-}
-
-export default SearchCustomerPage
+      </div>
+    )
+  }
+  

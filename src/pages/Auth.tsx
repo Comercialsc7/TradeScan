@@ -1,101 +1,96 @@
-import { useState, useEffect } from 'react'
-import { useSearchParams, useNavigate } from 'react-router-dom'
-import { cn } from '@/lib/utils'
-import { AuthForm } from '@/components/auth/AuthForm'
-import { loginSchema, signupSchema } from '@/lib/schemas'
-import { ThemeToggle } from '@/components/theme-toggle'
+  import { useState } from 'react'
+  import { useNavigate } from 'react-router-dom'
+  import { useAuth } from '@/contexts/AuthContext'
+  import { Button } from '@/components/ui/button'
+  import { Input } from '@/components/ui/input'
+  import { Label } from '@/components/ui/label'
+  import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+  import { toast } from '@/components/ui/use-toast'
+  import { Loader2 } from 'lucide-react'
 
-const AuthPage = () => {
-  const [searchParams] = useSearchParams()
-  const navigate = useNavigate()
-  const mode = searchParams.get('mode')
-  const [authMode, setAuthMode] = useState<'login' | 'signup'>(
-    mode === 'signup' ? 'signup' : 'login',
-  )
+  export default function AuthPage() {
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const { signIn } = useAuth()
+    const navigate = useNavigate()
 
-  useEffect(() => {
-    const newMode = mode === 'signup' ? 'signup' : 'login'
-    setAuthMode(newMode)
-    document.title =
-      newMode === 'login' ? 'Entrar - TradeScan' : 'Cadastrar - TradeScan'
-  }, [mode])
+    const handleLogin = async (e: React.FormEvent) => {
+      e.preventDefault()
+      if (!email || !password) {
+        toast({
+          title: 'Campos obrigatórios',
+          description: 'Por favor, preencha email e senha.',
+          variant: 'destructive',
+        })
+        return
+      }
 
-  const handleModeChange = (newMode: 'login' | 'signup') => {
-    setAuthMode(newMode)
-    navigate(`/auth?mode=${newMode}`, { replace: true })
+      setIsLoading(true)
+      try {
+        const { error } = await signIn(email, password)
+        if (error) {
+          throw error
+        }
+        navigate('/')
+      } catch (error: any) {
+        console.error(error)
+        toast({
+          title: 'Erro no login',
+          description: error.message || 'Credenciais inválidas.',
+          variant: 'destructive',
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-muted/50 p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">TradeScan</CardTitle>
+            <CardDescription>Entre para acessar o sistema</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleLogin}>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Senha</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button className="w-full" type="submit" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Entrando...
+                  </>
+                ) : (
+                  'Entrar'
+                )}
+              </Button>
+            </CardFooter>
+          </form>
+        </Card>
+      </div>
+    )
   }
-
-  const schema = authMode === 'login' ? loginSchema : signupSchema
-
-  return (
-    <>
-      <div className="absolute right-4 top-4 md:right-8 md:top-8">
-        <ThemeToggle />
-      </div>
-      <div className="space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold tracking-tight text-slate-800 dark:text-white">
-            TradeScan
-          </h1>
-          <p className="mt-2 text-base text-slate-600 dark:text-slate-400">
-            Leitura Comercial Inteligente.
-          </p>
-        </div>
-
-        <div className="relative flex h-12 items-center justify-center rounded-xl bg-slate-200 p-1 dark:bg-slate-800">
-          <label className="z-10 flex h-full w-1/2 cursor-pointer items-center justify-center rounded-lg px-2 text-center transition-colors duration-200 ease-in-out">
-            <input
-              type="radio"
-              name="auth-mode"
-              value="login"
-              className="peer sr-only"
-              checked={authMode === 'login'}
-              onChange={() => handleModeChange('login')}
-            />
-            <span
-              className={cn(
-                'text-sm font-medium text-slate-500 dark:text-slate-400',
-                {
-                  'text-checked-toggle-foreground': authMode === 'login',
-                },
-              )}
-            >
-              Entrar
-            </span>
-          </label>
-          <label className="z-10 flex h-full w-1/2 cursor-pointer items-center justify-center rounded-lg px-2 text-center transition-colors duration-200 ease-in-out">
-            <input
-              type="radio"
-              name="auth-mode"
-              value="signup"
-              className="peer sr-only"
-              checked={authMode === 'signup'}
-              onChange={() => handleModeChange('signup')}
-            />
-            <span
-              className={cn(
-                'text-sm font-medium text-slate-500 dark:text-slate-400',
-                {
-                  'text-checked-toggle-foreground': authMode === 'signup',
-                },
-              )}
-            >
-              Cadastrar
-            </span>
-          </label>
-          <div
-            className={cn(
-              'absolute left-1 top-1 h-10 w-[calc(50%-0.25rem)] rounded-lg bg-checked-toggle-background shadow-sm transition-transform duration-200 ease-in-out',
-              { 'translate-x-0': authMode === 'login' },
-              { 'translate-x-full': authMode === 'signup' },
-            )}
-          />
-        </div>
-
-        <AuthForm authMode={authMode} schema={schema} />
-      </div>
-    </>
-  )
-}
-
-export default AuthPage
+  

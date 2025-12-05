@@ -1,93 +1,87 @@
-import { useEffect } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
-import {
-  ArrowLeft,
-  Building,
-  Hash,
-  Info,
-  MapPin,
-  Phone,
-  Users,
-} from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { customers } from '@/lib/mock-data'
+  import { useEffect, useState } from 'react'
+  import { useParams, Link } from 'react-router-dom'
+  import { Scan, ArrowLeft, Loader2, MapPin, Phone } from 'lucide-react'
+  import { Button } from '@/components/ui/button'
+  import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+  import { getCustomerById, type Customer } from '@/services/customers'
 
-const CustomerDetailsPage = () => {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const customer = customers.find((c) => c.id === id)
+  export default function CustomerDetailsPage() {
+    const { customerId } = useParams<{ customerId: string }>()
+    const [customer, setCustomer] = useState<Customer | null>(null)
+    const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    if (customer) {
-      document.title = `${customer.name} - TradeScan`
-    } else {
-      document.title = 'Cliente não encontrado - TradeScan'
+    useEffect(() => {
+      const fetchCustomer = async () => {
+        if (!customerId) return
+        setLoading(true)
+        try {
+          const data = await getCustomerById(customerId)
+          setCustomer(data)
+        } catch (error) {
+          console.error('Error fetching customer:', error)
+        } finally {
+          setLoading(false)
+        }
+      }
+      fetchCustomer()
+    }, [customerId])
+
+    if (loading) {
+      return (
+        <div className="flex h-[50vh] items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      )
     }
-  }, [customer])
 
-  if (!customer) {
+    if (!customer) {
+      return (
+        <div className="text-center py-12">
+          <h2 className="text-2xl font-bold">Cliente não encontrado</h2>
+          <Button asChild className="mt-4">
+            <Link to="/search-customer">Voltar para busca</Link>
+          </Button>
+        </div>
+      )
+    }
+
     return (
-      <div className="flex h-screen flex-col items-center justify-center bg-background text-center">
-        <h1 className="text-2xl font-bold">Cliente não encontrado</h1>
-        <p className="text-muted-foreground">
-          O cliente que você está procurando não existe.
-        </p>
-        <Button asChild className="mt-4">
-          <Link to="/search-customer">Voltar para a busca</Link>
-        </Button>
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" asChild>
+            <Link to="/search-customer">
+              <ArrowLeft className="h-6 w-6" />
+            </Link>
+          </Button>
+          <h1 className="text-2xl font-bold">Detalhes do Cliente</h1>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl">{customer.nome}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <MapPin className="h-5 w-5" />
+              <span>{customer.endereco || 'Endereço não cadastrado'}</span>
+            </div>
+            <div className="flex items-center gap-3 text-muted-foreground">
+              <Phone className="h-5 w-5" />
+              <span>{customer.telefone || 'Telefone não cadastrado'}</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Button size="lg" className="h-24 text-lg flex flex-col gap-2" asChild>
+            <Link to="/scanner" state={{ customerId: customer.id }}>
+              <Scan className="h-8 w-8" />
+              Escanear Produto
+            </Link>
+          </Button>
+          {/* Add more actions here like "View History" */}
+        </div>
       </div>
     )
   }
-
-  const details = [
-    { icon: Hash, label: 'ID', value: customer.id },
-    { icon: Info, label: 'CNPJ', value: customer.cnpj },
-    { icon: Users, label: 'Rede', value: customer.rede },
-    { icon: Building, label: 'Segmento', value: customer.segmento },
-    { icon: MapPin, label: 'Cidade', value: customer.cidade },
-    { icon: MapPin, label: 'Endereço', value: customer.endereco },
-    { icon: Phone, label: 'Telefone', value: customer.telefone },
-  ]
-
-  return (
-    <div className="flex h-screen flex-col bg-background">
-      <header className="sticky top-0 z-10 flex h-16 items-center border-b bg-background px-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className="h-6 w-6 text-zinc-900 dark:text-white" />
-        </Button>
-        <h1 className="flex-1 truncate px-2 text-center text-lg font-semibold text-zinc-900 dark:text-white">
-          {customer.name}
-        </h1>
-        <div className="w-10" />
-      </header>
-
-      <main className="flex-1 overflow-y-auto p-4">
-        <Card>
-          <CardHeader>
-            <CardTitle>Detalhes do Cliente</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className="space-y-4">
-              {details.map((detail) => (
-                <li key={detail.label} className="flex items-start space-x-3">
-                  <detail.icon className="mt-1 h-5 w-5 flex-shrink-0 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      {detail.label}
-                    </p>
-                    <p className="font-semibold text-foreground">
-                      {detail.value}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      </main>
-    </div>
-  )
-}
-
-export default CustomerDetailsPage
+  
