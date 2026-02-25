@@ -26,6 +26,13 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
     return Number.isFinite(parsed) ? parsed : 0
   }
 
+  const getUnitPrice = (totalValue: unknown, quantity: unknown) => {
+    const total = toSafeNumber(totalValue)
+    const qty = toSafeNumber(quantity)
+    if (qty <= 0) return 0
+    return total / qty
+  }
+
   const latestSale =
     sales.length > 0
       ? [...sales].sort(
@@ -35,7 +42,10 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
       )[0]
       : null
 
-  const lastSalePrice = toSafeNumber(latestSale?.vlrembtabpreco)
+  const lastSalePrice = getUnitPrice(
+    latestSale?.vlrembtabpreco,
+    latestSale?.qtdatendida,
+  )
 
   const salesLast30Days = sales
     .filter((sale) => {
@@ -93,7 +103,9 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
             </p>
           </div>
           <p className="mt-2 break-all text-base font-bold leading-tight sm:text-2xl">
-            {stat.value}
+            {stat.label === 'Último Preço Venda'
+              ? `${stat.value} UND`
+              : stat.value}
           </p>
         </div>
       ))}

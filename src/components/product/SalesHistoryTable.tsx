@@ -57,6 +57,12 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
     }).format(val)
   }
 
+  const getUnitPrice = (totalValue: number | null, quantity: number | null) => {
+    if (totalValue === null || totalValue === undefined) return null
+    if (quantity === null || quantity === undefined || quantity <= 0) return null
+    return totalValue / quantity
+  }
+
   const sortedSales = [...sales].sort((a, b) => {
     const dateA = parseDate(a.dtainclusao)?.getTime() ?? 0
     const dateB = parseDate(b.dtainclusao)?.getTime() ?? 0
@@ -80,6 +86,7 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
           <TableBody>
             {sortedSales.map((sale, index) => {
               const daysSince = getDaysSince(sale.dtainclusao)
+              const unitPrice = getUnitPrice(sale.vlrembtabpreco, sale.qtdatendida)
 
               return (
               <TableRow key={sale.nropedvenda ?? index}>
@@ -102,7 +109,7 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
                   {sale.qtdatendida ?? 0}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right">
-                  {formatCurrency(sale.vlrembtabpreco)}
+                  {unitPrice === null ? '-' : `${formatCurrency(unitPrice)} UND`}
                 </TableCell>
               </TableRow>
               )
