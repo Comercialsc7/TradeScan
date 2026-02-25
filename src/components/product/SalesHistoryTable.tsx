@@ -106,10 +106,10 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
                   {sale.nropedvenda || '-'}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-center">
-                  {sale.qtdatendida ?? 0}
+                  {`${sale.qtdatendida ?? 0} UND`}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-right">
-                  {unitPrice === null ? '-' : `${formatCurrency(unitPrice)} UND`}
+                  {unitPrice === null ? '-' : formatCurrency(unitPrice)}
                 </TableCell>
               </TableRow>
               )

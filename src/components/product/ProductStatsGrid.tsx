@@ -85,7 +85,7 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
     {
       icon: TrendingUp,
       label: 'Vendas (30 dias)',
-      value: salesLast30Days.toString(),
+      value: `${salesLast30Days} UND`,
     },
   ]
 
@@ -103,9 +103,7 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
             </p>
           </div>
           <p className="mt-2 break-all text-base font-bold leading-tight sm:text-2xl">
-            {stat.label === 'Último Preço Venda'
-              ? `${stat.value} UND`
-              : stat.value}
+            {stat.value}
           </p>
         </div>
       ))}
