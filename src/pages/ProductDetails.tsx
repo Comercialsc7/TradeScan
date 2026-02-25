@@ -83,10 +83,10 @@ const ProductDetailsPage = () => {
       <main className="flex-1 overflow-y-auto p-4">
         <Card>
           <CardHeader>
-            <p className="text-sm font-medium text-primary">
+            <p className="break-all text-xs font-medium text-primary sm:text-sm">
               Cód. Barras: {product.codbarras || '-'}
             </p>
-            <CardTitle className="text-xl">
+            <CardTitle className="break-words text-lg leading-snug sm:text-xl">
               {product.desccompleta || 'Produto sem descrição'}
             </CardTitle>
           </CardHeader>

@@ -80,19 +80,21 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
   ]
 
   return (
-    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
+          className="min-w-0 rounded-lg border bg-card p-4 text-card-foreground shadow-sm"
         >
-          <div className="flex items-center space-x-3">
+          <div className="flex min-w-0 items-center space-x-3">
             <stat.icon className="h-5 w-5 flex-shrink-0 text-primary" />
-            <p className="text-sm font-medium text-muted-foreground">
+            <p className="truncate text-sm font-medium text-muted-foreground">
               {stat.label}
             </p>
           </div>
-          <p className="mt-2 text-2xl font-bold">{stat.value}</p>
+          <p className="mt-2 break-all text-base font-bold leading-tight sm:text-2xl">
+            {stat.value}
+          </p>
         </div>
       ))}
     </div>

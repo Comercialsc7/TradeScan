@@ -67,7 +67,7 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
     <div className="mt-6">
       <h3 className="mb-4 text-lg font-semibold">Histórico de Vendas</h3>
       <div className="rounded-lg border">
-        <Table>
+        <Table className="min-w-[620px]">
           <TableHeader>
             <TableRow>
               <TableHead>Data</TableHead>
@@ -83,25 +83,25 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
 
               return (
               <TableRow key={sale.nropedvenda ?? index}>
-                <TableCell>
+                <TableCell className="whitespace-nowrap">
                   {formatDate(sale.dtainclusao)}
                 </TableCell>
                 <TableCell className="text-center">
                   {daysSince === null ? (
                     '-'
                   ) : (
-                    <span className="inline-flex rounded-md border px-2 py-0.5 text-xs font-medium">
+                    <span className="inline-flex whitespace-nowrap rounded-md border px-2 py-0.5 text-xs font-medium">
                       {daysSince} dias
                     </span>
                   )}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="whitespace-nowrap text-center">
                   {sale.nropedvenda || '-'}
                 </TableCell>
-                <TableCell className="text-center">
+                <TableCell className="whitespace-nowrap text-center">
                   {sale.qtdatendida ?? 0}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="whitespace-nowrap text-right">
                   {formatCurrency(sale.vlrembtabpreco)}
                 </TableCell>
               </TableRow>
