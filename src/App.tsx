@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
-import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeProvider } from '@/components/theme-provider'
 import Index from './pages/Index'
@@ -34,14 +33,14 @@ const App = () => {
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
-            <Sonner />
+
             <Routes>
-              <Route path="/welcome" element={<Index />} />
               <Route element={<Layout />}>
                 <Route path="/auth" element={<AuthPage />} />
               </Route>
 
               <Route element={<ProtectedRoute />}>
+                <Route path="/welcome" element={<Index />} />
                 <Route path="/search-customer" element={<SearchCustomerPage />} />
                 <Route path="/customer/:id" element={<CustomerDetailsPage />} />
                 <Route path="/scanner" element={<ScannerPage />} />

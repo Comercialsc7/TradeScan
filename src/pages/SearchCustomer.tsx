@@ -13,10 +13,12 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { searchCustomers, type Customer } from '@/services/customers'
 import { useAuth } from '@/contexts/AuthContext'
-// ...
+const CACHE_KEY = 'tradescan_customers_cache'
+const CACHE_DURATION = 1000 * 60 * 30 // 30 minutes
 
 const SearchCustomerPage = () => {
-  const [customers, setCustomers] = useState<Customer[]>([])
+  const [allCustomers, setAllCustomers] = useState<Customer[]>([])
+  const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -26,15 +28,48 @@ const SearchCustomerPage = () => {
   const navigate = useNavigate()
   const { signOut } = useAuth()
 
+
+  // Load customers with cache
   useEffect(() => {
     document.title = 'Buscar Cliente - TradeScan'
 
-    const fetchClients = async () => {
+    const loadCustomers = async () => {
+      // Check cache first
+      try {
+        const cached = sessionStorage.getItem(CACHE_KEY)
+        if (cached) {
+          const { data, timestamp } = JSON.parse(cached)
+          const isExpired = Date.now() - timestamp > CACHE_DURATION
+
+          if (!isExpired) {
+            console.log('📦 Loading customers from cache')
+            setAllCustomers(data)
+            setFilteredCustomers(data)
+            return
+          }
+        }
+      } catch (e) {
+        console.warn('Cache read failed:', e)
+      }
+
+      // No cache or expired - fetch from API
       setIsLoading(true)
       setError(null)
       try {
-        const data = await searchCustomers(searchTerm)
-        setCustomers(data || [])
+        console.log('🌐 Fetching customers from API...')
+        const data = await searchCustomers('') // Empty search = all customers
+        setAllCustomers(data || [])
+        setFilteredCustomers(data || [])
+
+        // Save to cache
+        try {
+          sessionStorage.setItem(CACHE_KEY, JSON.stringify({
+            data,
+            timestamp: Date.now()
+          }))
+        } catch (e) {
+          console.warn('Cache write failed:', e)
+        }
       } catch (err: any) {
         console.error('Error loading customers:', err)
         setError(err.message || 'Erro ao carregar clientes. Verifique sua conexão ou credenciais.')
@@ -43,15 +78,39 @@ const SearchCustomerPage = () => {
       }
     }
 
-    const timer = setTimeout(() => {
-      fetchClients()
-    }, 500)
+    loadCustomers()
+  }, [])
 
-    return () => clearTimeout(timer)
-  }, [searchTerm])
+  // Filter customers locally when search term changes
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setFilteredCustomers(allCustomers)
+      return
+    }
+
+    const term = searchTerm.toLowerCase().trim()
+
+    // Only filter if term is at least 2 characters (performance)
+    if (term.length < 2) {
+      setFilteredCustomers(allCustomers)
+      return
+    }
+
+    const filtered = allCustomers.filter((customer) => {
+      return (
+        customer.nomerazao?.toLowerCase().includes(term) ||
+        customer.cnpj?.toLowerCase().includes(term) ||
+        customer.apelido?.toLowerCase().includes(term) ||
+        customer.rede?.toLowerCase().includes(term) ||
+        customer.seqpessoa?.toString().includes(term)
+      )
+    })
+
+    setFilteredCustomers(filtered)
+  }, [searchTerm, allCustomers])
 
   const handleCustomerSelect = (customerId: string) => {
-    setSelectedCustomerId(customerId)
+    setSelectedCustomerId((prev) => (prev === customerId ? null : customerId))
   }
 
   const handleScan = () => {
@@ -95,54 +154,63 @@ const SearchCustomerPage = () => {
               {error}
             </div>
           )}
+
           {isLoading ? (
             <div className="flex justify-center py-10">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : customers.length > 0 ? (
-            customers.map((customer) => (
-              <div
-                key={customer.id}
-                className={cn(
-                  'flex cursor-pointer items-center space-x-4 rounded-lg p-4 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
-                  {
-                    'bg-primary/10 ring-2 ring-primary dark:bg-primary/20':
-                      selectedCustomerId === customer.id,
-                  },
-                )}
-                onClick={() => handleCustomerSelect(customer.id)}
-              >
-                <div className="flex-1 space-y-1.5">
-                  <p className="font-semibold text-zinc-900 dark:text-white">
-                    {customer.nomerazao}
-                  </p>
-                  <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
-                    <p>
-                      <span className="font-medium">ID:</span> {customer.seqpessoa || '-'}
+          ) : filteredCustomers.length > 0 ? (
+            <>
+              {filteredCustomers.slice(0, 100).map((customer) => (
+                <div
+                  key={customer.id}
+                  className={cn(
+                    'flex cursor-pointer items-center space-x-4 rounded-lg p-4 transition-all duration-200 hover:bg-zinc-100 dark:hover:bg-zinc-800/50',
+                    {
+                      'bg-primary/10 ring-2 ring-primary dark:bg-primary/20':
+                        selectedCustomerId === customer.id,
+                    },
+                  )}
+                  onClick={() => handleCustomerSelect(customer.id)}
+                >
+                  <div className="flex-1 space-y-1.5">
+                    <p className="font-semibold text-zinc-900 dark:text-white">
+                      {customer.nomerazao}
                     </p>
-                    <p>
-                      <span className="font-medium">CNPJ:</span> {customer.cnpj}
-                    </p>
-                    <p className="col-span-full">
-                      <span className="font-medium">Rede:</span> {customer.rede}
-                    </p>
+                    <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
+                      <p>
+                        <span className="font-medium">ID:</span> {customer.seqpessoa || '-'}
+                      </p>
+                      <p>
+                        <span className="font-medium">CNPJ:</span> {customer.cnpj}
+                      </p>
+                      <p className="col-span-full">
+                        <span className="font-medium">Rede:</span> {customer.rede}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {selectedCustomerId === customer.id && (
+                      <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
+                    )}
+                    <Link
+                      to={`/customer/${customer.id}`}
+                      className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`Ver detalhes de ${customer.nomerazao}`}
+                    >
+                      <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
+                    </Link>
                   </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  {selectedCustomerId === customer.id && (
-                    <CheckCircle2 className="h-6 w-6 flex-shrink-0 text-primary" />
-                  )}
-                  <Link
-                    to={`/customer/${customer.id}`}
-                    className="flex h-8 w-8 items-center justify-center rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                    onClick={(e) => e.stopPropagation()}
-                    aria-label={`Ver detalhes de ${customer.nomerazao}`}
-                  >
-                    <ChevronRight className="h-6 w-6 flex-shrink-0 text-zinc-400 dark:text-zinc-500" />
-                  </Link>
+              ))
+              }
+              {filteredCustomers.length > 100 && (
+                <div className="rounded-lg bg-zinc-100 p-4 text-center text-sm text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+                  Mostrando 100 de {filteredCustomers.length.toLocaleString('pt-BR')} clientes. Continue digitando para refinar.
                 </div>
-              </div>
-            ))
+              )}
+            </>
           ) : (
             <div className="py-10 text-center">
               <p className="text-muted-foreground">

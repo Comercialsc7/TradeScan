@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate, Link } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProductStatsGrid } from '@/components/product/ProductStatsGrid'
 import { SalesHistoryTable } from '@/components/product/SalesHistoryTable'
 import {
   getProductAndSales,
-  type Product,
+  type ProductInfo,
   type Sale,
 } from '@/services/sales'
 
@@ -18,7 +18,7 @@ const ProductDetailsPage = () => {
   }>()
   const navigate = useNavigate()
 
-  const [product, setProduct] = useState<Product | null>(null)
+  const [product, setProduct] = useState<ProductInfo | null>(null)
   const [sales, setSales] = useState<Sale[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -84,28 +84,13 @@ const ProductDetailsPage = () => {
         <Card>
           <CardHeader>
             <p className="text-sm font-medium text-primary">
-              Cód. Barras: {product.codbarras}
+              Cód. Barras: {product.codbarras || '-'}
             </p>
             <CardTitle className="text-xl">
-              {product.desccompleta || product.descreduzida}
+              {product.desccompleta || 'Produto sem descrição'}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              {product.descreduzida && product.descreduzida !== product.desccompleta
-                ? product.descreduzida
-                : ''}
-            </p>
-          </CardContent>
         </Card>
-
-        {/* 
-          Note: ProductStatsGrid likely needs updates next to match 
-          the new Product type schema (it expects 'baseCost', 'stock', etc.
-          which might not be in the database 'produtos' table yet).
-          For now, we pass what we have, but we might need to adjust 
-          ProductStatsGrid to handle missing fields gracefully or fetching them differently.
-        */}
         <ProductStatsGrid product={product} sales={sales} />
         <SalesHistoryTable sales={sales} />
       </main>

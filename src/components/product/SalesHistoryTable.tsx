@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { format } from 'date-fns'
+import { differenceInCalendarDays, format, startOfDay } from 'date-fns'
 
 type SalesHistoryTableProps = {
   sales: Sale[]
@@ -33,6 +33,22 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
     }
   }
 
+  const parseDate = (dateString: string | null) => {
+    if (!dateString) return null
+    const parsed = new Date(dateString)
+    return Number.isNaN(parsed.getTime()) ? null : parsed
+  }
+
+  const getDaysSince = (dateString: string | null) => {
+    const parsed = parseDate(dateString)
+    if (!parsed) return null
+
+    return Math.max(
+      0,
+      differenceInCalendarDays(startOfDay(new Date()), startOfDay(parsed)),
+    )
+  }
+
   const formatCurrency = (val: number | null) => {
     if (val === null || val === undefined) return '-'
     return new Intl.NumberFormat('pt-BR', {
@@ -40,6 +56,12 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
       currency: 'BRL',
     }).format(val)
   }
+
+  const sortedSales = [...sales].sort((a, b) => {
+    const dateA = parseDate(a.dtainclusao)?.getTime() ?? 0
+    const dateB = parseDate(b.dtainclusao)?.getTime() ?? 0
+    return dateB - dateA
+  })
 
   return (
     <div className="mt-6">
@@ -49,34 +71,42 @@ export const SalesHistoryTable = ({ sales }: SalesHistoryTableProps) => {
           <TableHeader>
             <TableRow>
               <TableHead>Data</TableHead>
+              <TableHead className="text-center">Dias</TableHead>
               <TableHead className="text-center">Pedido</TableHead>
               <TableHead className="text-center">Qtde.</TableHead>
               <TableHead className="text-right">Valor Unit.</TableHead>
-              <TableHead className="text-center">Margem %</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sales.map((sale) => (
-              <TableRow key={sale.id}>
+            {sortedSales.map((sale, index) => {
+              const daysSince = getDaysSince(sale.dtainclusao)
+
+              return (
+              <TableRow key={sale.nropedvenda ?? index}>
                 <TableCell>
-                  {formatDate(sale.dtainclusao || sale.dtageracaonf)}
+                  {formatDate(sale.dtainclusao)}
                 </TableCell>
                 <TableCell className="text-center">
-                  {sale.nropedvenda || sale.numerodf || '-'}
+                  {daysSince === null ? (
+                    '-'
+                  ) : (
+                    <span className="inline-flex rounded-md border px-2 py-0.5 text-xs font-medium">
+                      {daysSince} dias
+                    </span>
+                  )}
                 </TableCell>
                 <TableCell className="text-center">
-                  {sale.qtdatendida || 0}
+                  {sale.nropedvenda || '-'}
+                </TableCell>
+                <TableCell className="text-center">
+                  {sale.qtdatendida ?? 0}
                 </TableCell>
                 <TableCell className="text-right">
                   {formatCurrency(sale.vlrembtabpreco)}
                 </TableCell>
-                <TableCell className="text-center">
-                  {sale.percmargemitem !== null
-                    ? `${sale.percmargemitem.toFixed(2)}%`
-                    : '-'}
-                </TableCell>
               </TableRow>
-            ))}
+              )
+            })}
           </TableBody>
         </Table>
       </div>

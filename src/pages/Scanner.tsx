@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, ChangeEvent } from 'react'
+import { useEffect, useRef, useState, useCallback, ChangeEvent } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { X, Zap, Image, VideoOff, Loader2, Keyboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -6,7 +6,6 @@ import { useCamera } from '@/hooks/useCamera'
 import { cn } from '@/lib/utils'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { toast } from '@/components/ui/use-toast'
-import { getProductByBarcode } from '@/services/products'
 
 const ScannerPage = () => {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -45,36 +44,17 @@ const ScannerPage = () => {
     }
   }, [stream])
 
-  const handleBarcodeDetected = async (barcode: string) => {
-    // Prevent multiple calls while processing
+  const handleBarcodeDetected = useCallback(async (barcode: string) => {
     if (isProcessing) return
 
     setIsProcessing(true)
     try {
-      const product = await getProductByBarcode(barcode)
-
-      if (product) {
-        navigate(`/customer/${customerId}/product/${barcode}`)
-      } else {
-        toast({
-          title: 'Produto não encontrado',
-          description: `Nenhum produto encontrado com o código ${barcode}.`,
-          variant: 'destructive',
-        })
-        // Add a small delay before allowing another scan to avoid spamming alerts
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-      }
-    } catch (error) {
-      console.error('Error scanning product:', error)
-      toast({
-        title: 'Erro na leitura',
-        description: 'Não foi possível verificar o produto.',
-        variant: 'destructive',
-      })
+      // Navigate directly — ProductDetails handles "not found" via sales query
+      navigate(`/customer/${customerId}/product/${barcode}`)
     } finally {
       setIsProcessing(false)
     }
-  }
+  }, [isProcessing, customerId, navigate])
 
   useEffect(() => {
     if (permissionStatus !== 'granted' || !stream || !videoRef.current) return
@@ -107,7 +87,6 @@ const ScannerPage = () => {
           if (barcodes.length > 0) {
             detectionInProgress = true
             clearInterval(intervalId)
-            clearInterval(intervalId)
             handleBarcodeDetected(barcodes[0].rawValue)
           }
         } catch (error) {
@@ -121,7 +100,7 @@ const ScannerPage = () => {
     return () => {
       clearInterval(intervalId)
     }
-  }, [permissionStatus, stream, customerId, navigate])
+  }, [permissionStatus, stream, handleBarcodeDetected])
 
   const handleGalleryClick = () => {
     if (isProcessing) return

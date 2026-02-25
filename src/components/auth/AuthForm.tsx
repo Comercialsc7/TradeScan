@@ -76,7 +76,7 @@ export const AuthForm = ({ authMode, schema }: AuthFormProps) => {
         })
         navigate('/welcome')
       }
-    } catch (error) {
+    } catch (_error) {
       toast({
         variant: "destructive",
         title: "Erro inesperado",
