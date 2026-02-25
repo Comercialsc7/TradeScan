@@ -21,6 +21,11 @@ type Stat = {
 }
 
 export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
+  const toSafeNumber = (value: unknown) => {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+
   const latestSale =
     sales.length > 0
       ? [...sales].sort(
@@ -30,14 +35,14 @@ export const ProductStatsGrid = ({ product, sales }: ProductStatsGridProps) => {
       )[0]
       : null
 
-  const lastSalePrice = latestSale?.vlrembtabpreco ?? 0
+  const lastSalePrice = toSafeNumber(latestSale?.vlrembtabpreco)
 
   const salesLast30Days = sales
     .filter((sale) => {
       if (!sale.dtainclusao) return false
       return isAfter(new Date(sale.dtainclusao), subDays(new Date(), 30))
     })
-    .reduce((acc, sale) => acc + (sale.qtdatendida ?? 0), 0)
+    .reduce((acc, sale) => acc + toSafeNumber(sale.qtdatendida), 0)
 
   const stats: Stat[] = [
     {

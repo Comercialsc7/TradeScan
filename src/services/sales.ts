@@ -9,7 +9,8 @@ export type Sale = {
   vlrembtabpreco: number | null
   qtdatendida: number | null
   desccompleta: string | null
-  codacessonum: string | null
+  codacesso: string | null
+  codacessonum?: string | null
 }
 
 // Product info derived from the first sale record
@@ -41,6 +42,7 @@ const normalizeSalesResponse = (payload: unknown): Sale[] => {
     'seqproduto' in obj ||
     'nropedvenda' in obj ||
     'dtainclusao' in obj ||
+    'codacesso' in obj ||
     'codacessonum' in obj
 
   return hasSaleShape ? [obj as Sale] : []
@@ -112,7 +114,7 @@ export const getProductAndSales = async (
   const product: ProductInfo = {
     seqproduto: firstSale.seqproduto,
     desccompleta: firstSale.desccompleta,
-    codbarras: firstSale.codacessonum,
+    codbarras: firstSale.codacesso ?? firstSale.codacessonum ?? null,
   }
 
   return { product, sales }
