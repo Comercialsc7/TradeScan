@@ -4,7 +4,7 @@ import {
   ArrowLeft,
   Search,
   ChevronRight,
-  ScanLine,
+  ClipboardCheck,
   CheckCircle2,
   Loader2,
 } from 'lucide-react'
@@ -116,7 +116,7 @@ const SearchCustomerPage = () => {
 
   const handleScan = () => {
     if (selectedCustomerId) {
-      navigate('/scanner', { state: { customerId: selectedCustomerId } })
+      navigate(`/customer/${selectedCustomerId}/evaluation`)
     }
   }
 
@@ -233,8 +233,8 @@ const SearchCustomerPage = () => {
           disabled={!selectedCustomerId}
           onClick={handleScan}
         >
-          <ScanLine className="mr-2 h-6 w-6" />
-          Escanear Código de Barras
+          <ClipboardCheck className="mr-2 h-6 w-6" />
+          Iniciar Avaliação
         </Button>
       </footer>
     </div>

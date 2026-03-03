@@ -12,6 +12,7 @@ import CustomerDetailsPage from './pages/CustomerDetails'
 import ScannerPage from './pages/Scanner'
 import ManualEntryPage from './pages/ManualEntry'
 import ProductDetailsPage from './pages/ProductDetails'
+import CustomerEvaluationPage from './pages/CustomerEvaluation'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { ProtectedRoute } from '@/components/ProtectedRoute'
 
@@ -43,6 +44,10 @@ const App = () => {
                 <Route path="/welcome" element={<Index />} />
                 <Route path="/search-customer" element={<SearchCustomerPage />} />
                 <Route path="/customer/:id" element={<CustomerDetailsPage />} />
+                <Route
+                  path="/customer/:id/evaluation"
+                  element={<CustomerEvaluationPage />}
+                />
                 <Route path="/scanner" element={<ScannerPage />} />
                 <Route path="/manual-entry" element={<ManualEntryPage />} />
                 <Route
