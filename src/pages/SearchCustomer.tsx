@@ -102,7 +102,8 @@ const SearchCustomerPage = () => {
         customer.cnpj?.toLowerCase().includes(term) ||
         customer.apelido?.toLowerCase().includes(term) ||
         customer.rede?.toLowerCase().includes(term) ||
-        customer.seqpessoa?.toString().includes(term)
+        customer.seqpessoa?.toString().includes(term) ||
+        customer.cidade?.toLowerCase().includes(term)
       )
     })
 
@@ -173,18 +174,23 @@ const SearchCustomerPage = () => {
                   )}
                   onClick={() => handleCustomerSelect(customer.id)}
                 >
-                  <div className="flex-1 space-y-1.5">
+                  <div className="flex-1 space-y-1">
                     <p className="font-semibold text-zinc-900 dark:text-white">
                       {customer.nomerazao}
                     </p>
-                    <div className="grid grid-cols-1 gap-x-4 gap-y-1 text-sm text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-x-4 gap-y-0.5 text-xs text-zinc-500 dark:text-zinc-400 sm:grid-cols-2">
                       <p>
                         <span className="font-medium">ID:</span> {customer.seqpessoa || '-'}
                       </p>
-                      <p>
-                        <span className="font-medium">CNPJ:</span> {customer.cnpj}
-                      </p>
-                      <p className="col-span-full">
+                      <div className="space-y-0.5">
+                        <p>
+                          <span className="font-medium">CNPJ:</span> {customer.cnpj}
+                        </p>
+                        <p>
+                          <span className="font-medium">Cidade:</span> {customer.cidade || '-'}
+                        </p>
+                      </div>
+                      <p className="col-span-full sm:col-span-2">
                         <span className="font-medium">Rede:</span> {customer.rede}
                       </p>
                     </div>
