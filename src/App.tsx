@@ -5,6 +5,7 @@ import { TooltipProvider } from '@/components/ui/tooltip'
 import { ThemeProvider } from '@/components/theme-provider'
 import Index from './pages/Index'
 import AuthPage from './pages/Auth'
+import ResetPasswordPage from './pages/ResetPassword'
 import NotFound from './pages/NotFound'
 import Layout from './components/Layout'
 import SearchCustomerPage from './pages/SearchCustomer'
@@ -38,6 +39,7 @@ const App = () => {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/reset-password" element={<ResetPasswordPage />} />
               </Route>
 
               <Route element={<ProtectedRoute />}>

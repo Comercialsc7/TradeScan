@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, ChangeEvent } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { X, Zap, Image, VideoOff, Loader2, Keyboard } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useCamera } from '@/hooks/useCamera'
@@ -20,11 +20,18 @@ const ScannerPage = () => {
     permissionStatus,
     toggleFlashlight,
     getCameraPermission,
+    stopCamera,
     isFlashlightOn,
   } = useCamera()
 
+  const handleBack = useCallback(() => {
+    stopCamera()
+    navigate('/search-customer')
+  }, [stopCamera, navigate])
+
   useEffect(() => {
     if (!customerId) {
+      stopCamera()
       toast({
         title: 'Cliente não selecionado',
         description: 'Por favor, selecione um cliente antes de escanear.',
@@ -32,7 +39,7 @@ const ScannerPage = () => {
       })
       navigate('/search-customer')
     }
-  }, [customerId, navigate])
+  }, [customerId, stopCamera, navigate])
 
   useEffect(() => {
     document.title = 'Escanear Código - TradeScan'
@@ -49,12 +56,28 @@ const ScannerPage = () => {
 
     setIsProcessing(true)
     try {
+      stopCamera()
       // Navigate directly — ProductDetails handles "not found" via sales query
       navigate(`/customer/${customerId}/product/${barcode}`)
     } finally {
       setIsProcessing(false)
     }
-  }, [isProcessing, customerId, navigate])
+  }, [isProcessing, customerId, stopCamera, navigate])
+
+  useEffect(() => {
+    if (permissionStatus !== 'granted' || !stream) return
+
+    const timeoutId = window.setTimeout(() => {
+      stopCamera()
+      toast({
+        title: 'Câmera encerrada automaticamente',
+        description: 'A leitura foi encerrada após 30 segundos sem finalização.',
+      })
+      navigate('/search-customer')
+    }, 30000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [permissionStatus, stream, stopCamera, navigate])
 
   useEffect(() => {
     if (permissionStatus !== 'granted' || !stream || !videoRef.current) return
@@ -178,9 +201,7 @@ const ScannerPage = () => {
           </AlertDescription>
         </Alert>
         <div className="mt-6 flex gap-4">
-          <Button variant="outline" asChild>
-            <Link to="/search-customer">Voltar</Link>
-          </Button>
+          <Button variant="outline" onClick={handleBack}>Voltar</Button>
           <Button onClick={getCameraPermission}>Tentar Novamente</Button>
         </div>
       </div>
@@ -200,14 +221,14 @@ const ScannerPage = () => {
 
       <header className="absolute top-0 z-20 flex w-full items-center justify-between p-4 pt-8 sm:p-6">
         <Button
-          asChild
           variant="ghost"
           size="icon"
           className="h-12 w-12 rounded-full bg-black/20 text-white transition-colors hover:bg-black/40"
+          onClick={handleBack}
         >
-          <Link to="/search-customer" aria-label="Fechar scanner">
+          <span aria-label="Fechar scanner">
             <X className="h-7 w-7" />
-          </Link>
+          </span>
         </Button>
         <Button
           variant="ghost"
@@ -267,14 +288,15 @@ const ScannerPage = () => {
           </div>
           <div className="flex flex-col items-center gap-2 text-center">
             <Button
-              asChild
               variant="ghost"
               className="h-12 w-12 rounded-full bg-black/40 p-0 text-white transition-colors hover:bg-black/50"
               disabled={isProcessing}
+              onClick={() => {
+                stopCamera()
+                navigate('/manual-entry', { state: { customerId } })
+              }}
             >
-              <Link to="/manual-entry" state={{ customerId }}>
-                <Keyboard className="h-6 w-6" />
-              </Link>
+              <Keyboard className="h-6 w-6" />
             </Button>
             <span className="text-sm font-medium text-white">
               Digitar código

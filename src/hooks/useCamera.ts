@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 type PermissionStatus = 'idle' | 'pending' | 'granted' | 'denied'
 
@@ -8,10 +8,28 @@ export const useCamera = () => {
     useState<PermissionStatus>('idle')
   const [error, setError] = useState<Error | null>(null)
   const [isFlashlightOn, setIsFlashlightOn] = useState(false)
+  const streamRef = useRef<MediaStream | null>(null)
+
+  useEffect(() => {
+    streamRef.current = stream
+  }, [stream])
+
+  const stopCamera = useCallback(() => {
+    const activeStream = streamRef.current
+    if (activeStream) {
+      activeStream.getTracks().forEach((track) => track.stop())
+    }
+
+    streamRef.current = null
+    setStream(null)
+    setIsFlashlightOn(false)
+    setPermissionStatus('idle')
+  }, [])
 
   const getCameraPermission = useCallback(async () => {
     setPermissionStatus('pending')
     try {
+      stopCamera()
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' },
       })
@@ -21,11 +39,13 @@ export const useCamera = () => {
       setError(err as Error)
       setPermissionStatus('denied')
     }
-  }, [])
+  }, [stopCamera])
 
   const toggleFlashlight = useCallback(async () => {
     if (stream) {
       const videoTrack = stream.getVideoTracks()[0]
+      if (!videoTrack) return
+
       const capabilities = videoTrack.getCapabilities()
 
       if (capabilities.torch) {
@@ -47,13 +67,8 @@ export const useCamera = () => {
   useEffect(() => {
     getCameraPermission()
 
-    return () => {
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop())
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+    return stopCamera
+  }, [getCameraPermission, stopCamera])
 
   return {
     stream,
@@ -61,6 +76,7 @@ export const useCamera = () => {
     error,
     toggleFlashlight,
     getCameraPermission,
+    stopCamera,
     isFlashlightOn,
   }
 }
